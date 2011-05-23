@@ -15,6 +15,7 @@ function PrefsWindow()
           break;
   
         case 'colorpicker':
+          elms[i].setAttribute('color', prefs.getCharPref(elms[i].getAttribute('pref')));
           elms[i].color = prefs.getCharPref(elms[i].getAttribute('pref'));
           break;
           
@@ -44,7 +45,7 @@ function PrefsWindow()
           break;
 
         case 'colorpicker':
-          prefs.setCharPref(elms[i].getAttribute('pref'), elms[i].color);
+          prefs.setCharPref(elms[i].getAttribute('pref'), elms[i].getAttribute('color'));
           break;
           
         case 'radio':
