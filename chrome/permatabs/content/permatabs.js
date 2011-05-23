@@ -3,8 +3,9 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June 2008 (or at least tried to do this)
-// Added Permatab Home function and bump to version 1.8.0
-// known issues: home button overwrites permatabs, sometimes there is no menue-entry for permatabbing, problems with opening a whole bookmark folder
+// bump to version 1.8.1
+// new feature: Added "Permatab Home" function
+// known issues: sometimes there is no menue-entry for permatabbing, problems with opening a whole bookmark folder
 // contact: deos.hab@freenet.de
 
 var permaTabs =
@@ -163,8 +164,11 @@ var permaTabs =
 
     permaTabs.utils.wrapFunction('window.loadURI', window.loadURI, this.patchedLoadURI);
     permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
+
     permaTabs.utils.wrapFunction('window.BrowserHome', window.BrowserHome, this.patchedBrowserHome);
     permaTabs.utils.wrapFunction('window.BrowserHomeClick', window.BrowserHomeClick, this.patchedBrowserHomeClick);
+	permaTabs.utils.patchFunction('BrowserGoHome',BrowserGoHome,'loadOneOrMoreURIs(homePage);','if(permaTabs.isPermaTab(getBrowser().mCurrentTab)){ urls = homePage.split("|"); var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false); gBrowser.loadTabs(urls, loadInBackground); }else{ loadOneOrMoreURIs(homePage); }');
+
 
     var ver = false;
     if(((isset = this.prefs.getPrefType("extensions.permatabs.version")) != this.prefs.PREF_STRING) ||
@@ -240,6 +244,7 @@ var permaTabs =
 
   updateContextMenu : function(e)
   {
+
     var closeTabText = document.getElementById("tabBrowserStrings").getString("tabs.closeTab");
     var closeMenuItem = permaTabs.tabContextMenu.lastChild;
     for(var x = 0; x < permaTabs.tabContextMenu.childNodes.length; x++)
@@ -272,7 +277,7 @@ var permaTabs =
 	      menuItem2.setAttribute("oncommand", "permaTabs.goHome();");
 	      permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem.previousSibling);
 	  }
-	  
+
       if(!permaTabs.tabMixInstalled)
       {
         separator = document.createElement("menuseparator");
@@ -291,7 +296,7 @@ var permaTabs =
 
     var isPermaTab = (getBrowser().mContextTab && permaTabs.isPermaTab(getBrowser().mContextTab));
     document.getElementById("permaTabContextMenuItemMakePermanent").setAttribute("checked", isPermaTab);
-    if(document.getElementById("permaTabContextMenuItemPermanentHome")){ document.getElementById("permaTabContextMenuItemPermanentHome").setAttribute("disabled", !isPermaTab); }
+    if(document.getElementById("permaTabContextMenuItemPermanentHome")){ document.getElementById("permaTabContextMenuItemPermanentHome").hidden = !isPermaTab; }
     closeMenuItem.setAttribute('disabled', isPermaTab);
   },
 
