@@ -2,23 +2,25 @@
 // contact   : david@donesmart.com
 // copyright : 2006-2007 donesmart ltd
 
-// modified to work in Firefox 3 by deos in June/July 2008 (or at least i tried to do this)
-// bump to version mod 1.8.3
+// modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
+// bump to version mod 1.8.4
 // contact: deos.hab@freenet.de
 //
 // new feature:
 // - Added "Permatab Home" function
-// - compatibility fix for dublicateTab (now im blocking duplicated tabs to be permanent)
+// - compatibility fix for dublicateTab (duplicate in new window is still buggy)
+// - compatibility fix for MR Tech Toolkit (especially its throbber function)
+// - compatibility fix for duplicing tabs with Tab Mix Plus
 //
 // known issues:
-// - sometimes there is no menue-entry for permatabbing
+// - sometimes there is no menue-entry for permatabbing <-- appears to be nearly fixed
 // - problems with opening a whole bookmark folder (FF3 bug)
-// - could not fix bug with dubplicateTab's openInNewWindow until now
+// - could not fix bug with dubplicateTab's openInNewWindow
 
 
 var permaTabs =
 {
-	version : [1,8,3],
+	version : [1,8,4],
 	prevVersion : false,
 	prerequisites : false,
 	initialized : false,
@@ -28,6 +30,7 @@ var permaTabs =
 	tabMixInstalled : false,
 	faviconizeTabInstalled : false,
 	duplicateTabInstalled : false,
+	mrTechToolkitInstalled : false,
 	delayedStartupCall : false,
 	ssWillRestore : false,
 	ssTabsRestored : 0,
@@ -143,6 +146,7 @@ var permaTabs =
 				if(extId == '{dc572301-7619-498c-a57d-39143191b318}' && !disabled){ this.tabMixInstalled = true; }
 				else if(extId == 'faviconizetab@espion.just-size.jp' && !disabled){ this.faviconizeTabInstalled = true; }
 				else if(extId == '{61ED2A9A-39EB-4AAF-BD14-06DFBE8880C3}' && !disabled){ this.duplicateTabInstalled = true }
+				else if(extId == '{9669CC8F-B388-42FE-86F4-CB5E7F5A8BDC}' && !disabled){ this.mrTechToolkitInstalled = true; }
 			}
 		}
 
@@ -172,7 +176,7 @@ var permaTabs =
 
 		getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
 
-		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') || permaTabs.OS == 'Darwin') return $base();})
+		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') /*|| permaTabs.OS == 'Darwin'*/) return $base();})
 
 		permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
 		
@@ -216,10 +220,30 @@ var permaTabs =
 																					});
 		}
 		
+		//tabmixplus
 		try
 		{
+		    if(this.tabMixInstalled && typeof gBrowser.duplicateTab == "function")
+			{ permaTabs.utils.patchFunction('gBrowser.duplicateTab',gBrowser.duplicateTab,"return newTab;", "if(aTab.hasAttribute('isPermaTab')){ if((gBrowser.getBrowserForTab(aTab).currentURI.spec=='' || gBrowser.getBrowserForTab(aTab).currentURI.spec=='about:blank') && aTab.getAttribute('permaTabUrl')){ gBrowser.getBrowserForTab(newTab).loadURI(aTab.getAttribute('permaTabUrl')); } newTab.removeAttribute('isPermaTab'); newTab.removeAttribute('permaTabId'); newTab.removeAttribute('permaTabUrl'); } return newTab;"); }
+		}
+		catch(e){}
+
+		//duplicatetab
+		try
+		{
+		    if(this.duplicateTabInstalled && typeof duplicateTab.setClonedData == "function")
+			{ permaTabs.utils.patchFunction('duplicateTab.setClonedData',duplicateTab.setClonedData,"ss.setTabState(aTab, aClonedData);", "ss.setTabState(aTab, aClonedData); if(aTab.hasAttribute('isPermaTab')){ aTab.removeAttribute('isPermaTab'); aTab.removeAttribute('permaTabId'); aTab.removeAttribute('permaTabUrl'); }"); }
+
 		    if(this.duplicateTabInstalled && typeof duplicateTab.duplicateInTab == "function")
-			{ permaTabs.utils.patchFunction('duplicateTab.duplicateInTab',duplicateTab.duplicateInTab,'return newTab;',"if(newTab.hasAttribute('isPermaTab')){ newTab.removeAttribute('isPermaTab'); newTab.removeAttribute('isPermaId'); newTab.removeAttribute('isPermaUrl'); if((gBrowser.getBrowserForTab(aTab).currentURI.spec=='' || gBrowser.getBrowserForTab(aTab).currentURI.spec=='about:blank') && aTab.getAttribute('permaTabUrl')){ gBrowser.getBrowserForTab(newTab).loadURI(aTab.getAttribute('permaTabUrl')); } } return newTab;"); }
+			{ permaTabs.utils.patchFunction('duplicateTab.duplicateInTab',duplicateTab.duplicateInTab,"this.setClonedData(newTab, clonedData);", "this.setClonedData(newTab, clonedData); if(aTab.hasAttribute('isPermaTab') && (gBrowser.getBrowserForTab(aTab).currentURI.spec=='' || gBrowser.getBrowserForTab(aTab).currentURI.spec=='about:blank') && aTab.getAttribute('permaTabUrl')){ gBrowser.getBrowserForTab(newTab).loadURI(aTab.getAttribute('permaTabUrl')); }"); }
+		}
+		catch(e){}
+		
+		//mrtechtoolkit
+		try
+		{
+		    if(this.mrTechToolkitInstalled && typeof local_common.openURL == "function")
+		    { permaTabs.utils.patchFunction('local_common.openURL',local_common.openURL," if (myWindowContent == \"about:blank\") {", "if (permaTabs.isPermaTab(gBrowser.mCurrentTab)){ forceTab = true; } else if (myWindowContent == 'about:blank') {"); }
 		}
 		catch(e){}
 	},
@@ -368,7 +392,7 @@ var permaTabs =
 
 	colorPermaTabs : function()
 	{
-		var rule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') && permaTabs.OS != 'Darwin') ? 'background-color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.color") + ' !important;' : '');
+		var rule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') /*&& permaTabs.OS != 'Darwin'*/) ? 'background-color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.color") + ' !important;' : '');
 
 		try
 		{
