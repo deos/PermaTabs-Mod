@@ -4,15 +4,20 @@
 .tabbrowser-tab[isPermaTab=true] .tabs-closebutton,
 .tabbrowser-tab[isPermaTab=true] .tab-close-button
 {
-  display: none !important;
+	display: none !important;
 }
 
 #browser tab.tabbrowser-tab[isPermaTab=true] > *
 {
-  background-color: transparent !important;
+	background-color: transparent !important;
 }
 
 #browser tab.tabbrowser-tab[isPermaTab=true]
 {
-  background-color: #f2f2a9 !important;
+	background-image: none !important;
+}
+
+#browser tab.tabbrowser-tab[isPermaTab=true]
+{
+	background-color: #f2f2a9 !important;
 }

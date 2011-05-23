@@ -13,6 +13,7 @@
 
 <!ENTITY option.designBox.label "Aussehen">
 <!ENTITY option.color.label "Farbe der permanenten Tabs">
+<!ENTITY option.color.removeBackground "Hintergrund bei permanenten Tabs entfernen">
 
 <!ENTITY option.miscBox.label "Sonstiges">
 <!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">

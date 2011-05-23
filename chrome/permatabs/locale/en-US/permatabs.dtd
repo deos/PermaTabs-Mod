@@ -13,6 +13,7 @@
 
 <!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "PermaTab color">
+<!ENTITY option.color.removeBackground "Remove background of PermaTabs">
 
 <!ENTITY option.miscBox.label "Misc.">
 <!ENTITY option.askUnset.label "Ask before removing a PermaTab">

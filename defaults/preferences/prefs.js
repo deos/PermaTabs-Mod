@@ -7,6 +7,7 @@ pref("extensions.permatabs.subMenuExclude", false);
 
 pref("extensions.permatabs.distinguish", true);
 pref("extensions.permatabs.color", "#f2f2a9");
+pref("extensions.permatabs.removeBackground", false);
 
 pref("extensions.permatabs.askUnset", false);
 pref("extensions.permatabs.askOverwrite", false);

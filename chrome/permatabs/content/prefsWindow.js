@@ -24,14 +24,8 @@ function PrefsWindow()
 					break;
 			}
 		}
-
-        document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (prefs.getBoolPref('extensions.permatabs.forceNewTabs') && !prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain')));
-		document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !prefs.getBoolPref('extensions.permatabs.forceNewTabs'));
-
-		document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', prefs.getBoolPref('extensions.permatabs.hideAdditionalMenuItems'));
-		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (prefs.getBoolPref('extensions.permatabs.hideAdditionalMenuItems') || !prefs.getBoolPref('extensions.permatabs.subMenu')));
-
-		document.getElementById('permaTabsPrefColor').setAttribute('disabled', !prefs.getBoolPref('extensions.permatabs.distinguish'));
+		
+		this.disablefields();
 	};
 
 	this.save = function()
@@ -73,7 +67,7 @@ function PrefsWindow()
 	
 	this.disablefields = function()
 	{
-	    var pref = { "ForceNewTabs" 			: "permaTabsPrefForceNewTabs",
+		var pref = { "ForceNewTabs" 			: "permaTabsPrefForceNewTabs",
 					 "ForceNewTabsDomain" 		: "permaTabsPrefForceNewTabsDomain",
 					 "HideAdditionalMenuItems" 	: "permaTabsPrefHideAdditionalMenuItems",
 					 "SubMenu" 					: "permaTabsPrefSubMenu",
@@ -81,14 +75,14 @@ function PrefsWindow()
 
 		for(i in pref)
 		{
-		    var opt = document.getElementById(pref[i]);
+			var opt = document.getElementById(pref[i]);
 			pref[i] = (opt.hasAttribute('checked') && opt.getAttribute('checked')=='true');
 		}
 
 		document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !pref['ForceNewTabs']);
 		document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (pref['ForceNewTabs'] && !pref['ForceNewTabsDomain']));
 		
-        document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', pref['HideAdditionalMenuItems']);
+		document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', pref['HideAdditionalMenuItems']);
 		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (pref['HideAdditionalMenuItems'] || !pref['SubMenu']));
 
 		document.getElementById('permaTabsPrefColor').setAttribute('disabled', !pref['Distinguish']);

@@ -4,78 +4,86 @@
 <!DOCTYPE dialog SYSTEM "chrome://permatabs/locale/permatabs.dtd">
 
 <dialog id="permaTabsPrefWindow"
-        title="&options.label;"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        buttons="accept,cancel"
-        ondialogaccept="prefsWindow.save();"
-        onload="prefsWindow.sync();" >
-  <script type="application/x-javascript" src="chrome://permatabs/content/prefsWindow.js" />
+		title="&options.label;"
+		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		buttons="accept,cancel"
+		ondialogaccept="prefsWindow.save();"
+		onload="prefsWindow.sync();" >
 
+	<script type="application/x-javascript" src="chrome://permatabs/content/prefsWindow.js" />
+	
 
-  <groupbox>
-	  <caption label="&option.ruleBox.label;"/>
+	<groupbox>
+		<caption label="&option.ruleBox.label;"/>
 
-	  <checkbox id="permaTabsPrefForceNewTabs"
-	            label="&option.forceNewTab.label;"
-	            pref="extensions.permatabs.forceNewTabs"
-	            command="cmdPermaTabsPrefDisableFields" />
+		<checkbox id="permaTabsPrefForceNewTabs"
+				  label="&option.forceNewTab.label;"
+				  pref="extensions.permatabs.forceNewTabs"
+				  command="cmdPermaTabsPrefDisableFields" />
 
-	  <checkbox id="permaTabsPrefForceNewTabsDomain"
-	            label="&option.forceNewTabDomain.label;"
-	            pref="extensions.permatabs.forceNewTabsDomain"
-	            command="cmdPermaTabsPrefDisableFields"
-	            class="indent" />
-	            
-	  <checkbox id="permaTabsPrefAllowUrlbarDomain"
-	            label="&option.AllowUrlbarDomain.label;"
-	            pref="extensions.permatabs.allowUrlbarDomain" />
-  </groupbox>
-  
-  <groupbox>
-	  <caption label="&option.menuBox.label;"/>
+		<checkbox id="permaTabsPrefForceNewTabsDomain"
+				  label="&option.forceNewTabDomain.label;"
+				  pref="extensions.permatabs.forceNewTabsDomain"
+				  command="cmdPermaTabsPrefDisableFields"
+				  class="indent" />
 
-	  <checkbox id="permaTabsPrefHideAdditionalMenuItems"
-	            label="&option.hideAdditionalMenuItems.label;"
-	            pref="extensions.permatabs.hideAdditionalMenuItems"
-	            command="cmdPermaTabsPrefDisableFields" />
+		<checkbox id="permaTabsPrefAllowUrlbarDomain"
+				  label="&option.AllowUrlbarDomain.label;"
+				  pref="extensions.permatabs.allowUrlbarDomain" />
+	</groupbox>
 
-	  <checkbox id="permaTabsPrefSubMenu"
-	            label="&option.subMenu.label;"
-	            pref="extensions.permatabs.subMenu"
-	            command="cmdPermaTabsPrefDisableFields" />
+	<groupbox>
+		<caption label="&option.menuBox.label;"/>
 
-	  <checkbox id="permaTabsPrefSubMenuExclude"
-	            label="&option.subMenuExclude.label;"
-	            pref="extensions.permatabs.subMenuExclude"
-	            class="indent" />
-  </groupbox>
-  
-  <groupbox orient="horizontal">
-	  <caption label="&option.designBox.label;"/>
+		<checkbox id="permaTabsPrefHideAdditionalMenuItems"
+				  label="&option.hideAdditionalMenuItems.label;"
+				  pref="extensions.permatabs.hideAdditionalMenuItems"
+				  command="cmdPermaTabsPrefDisableFields" />
 
-	  <checkbox id="permaTabsPrefDistinguish"
-	            label="&option.color.label;"
-	            pref="extensions.permatabs.distinguish"
-	            command="cmdPermaTabsPrefDisableFields" />
+		<checkbox id="permaTabsPrefSubMenu"
+				  label="&option.subMenu.label;"
+				  pref="extensions.permatabs.subMenu"
+				  command="cmdPermaTabsPrefDisableFields" />
 
-	  <box>
-	    <colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" />
-	  </box>
-  </groupbox>
-  
-  <groupbox>
-	  <caption label="&option.miscBox.label;"/>
+		<checkbox id="permaTabsPrefSubMenuExclude"
+				  label="&option.subMenuExclude.label;"
+				  pref="extensions.permatabs.subMenuExclude"
+				  class="indent" />
+	</groupbox>
 
-	  <checkbox id="permaTabsPrefAskUnset"
-	            label="&option.askUnset.label;"
-	            pref="extensions.permatabs.askUnset" />
+	<groupbox orient="horizontal">
 
-	  <checkbox id="permaTabsPrefAskOverwrite"
-	            label="&option.askOverwrite.label;"
-	            pref="extensions.permatabs.askOverwrite" />
-  </groupbox>
-  
-  <command id="cmdPermaTabsPrefDisableFields"
-           oncommand="prefsWindow.disablefields();" />
+		<caption label="&option.designBox.label;"/>
+
+		<vbox>
+		    <hbox>
+				<checkbox id="permaTabsPrefDistinguish"
+						  label="&option.color.label;"
+						  pref="extensions.permatabs.distinguish"
+						  command="cmdPermaTabsPrefDisableFields" />
+
+				<colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" />
+			</hbox>
+			
+			<checkbox id="permaTabsPrefForceColor"
+					  label="&option.color.removeBackground;"
+					  pref="extensions.permatabs.removeBackground" />
+		</vbox>
+	</groupbox>
+
+	<groupbox>
+		<caption label="&option.miscBox.label;"/>
+
+		<checkbox id="permaTabsPrefAskUnset"
+				  label="&option.askUnset.label;"
+				  pref="extensions.permatabs.askUnset" />
+
+		<checkbox id="permaTabsPrefAskOverwrite"
+				  label="&option.askOverwrite.label;"
+				  pref="extensions.permatabs.askOverwrite" />
+	</groupbox>
+
+	<command id="cmdPermaTabsPrefDisableFields"
+			 oncommand="prefsWindow.disablefields();" />
 
 </dialog>
