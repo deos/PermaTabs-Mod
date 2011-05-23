@@ -1,2 +1,14 @@
-Turn tabs of your choice into permanent tabs. 
-PermaTabs can't be closed accidentally no matter what you click (even actions like "Close other tabs" will not affect them) and will stick around between sessions.
+Turn tabs of your choice into permanent tabs. PermaTabs can't be closed accidentally no matter 
+what you click (even actions like "Close other tabs" will not affect them) and will stick around 
+between sessions.
+
+Ideal for keeping URLs you use often, always one tab away. 
+Also, ideal for picking up specific articles where you left off during a previous session.
+
+From first installation PermaTabs includes three random sample tabs (from a built in list) 
+to get you started. Maybe you'll discover a useful site you never knew about?
+
+Adding or removing a permatab is simple - right click a site's tab, and check/uncheck "Permanent Tab".
+
+By right click a permanent tab there is a new context menu entry named "Permatab Home" which leads 
+the tab back to the site original set as permatab.

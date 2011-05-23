@@ -1,0 +1,113 @@
+Version 1.9.3
+* Added: Submenu for Toolbarbutton (When additional options are activated)
+* Added: Shortcut-key for PermaTab Home
+* New option: Shortcut-keys are now customizable
+* New option: Use icon to highlight PermaTabs
+* New option: Transparent color
+* Changed: Reworked option-window
+* Bugfix: Home-Button loads in new tab
+* Bugfix: Problem with private Browsing (partial fix)
+* Compatibility fix: FabTabs
+Released: 2010-01-26
+
+Version 1.9.2
+* Compatibility bump: Firefox 3.5
+Released: 2009-07-01
+
+Version 1.9.1
+* Compatibility bump: Firefox 3.5 Beta 4 pre
+* New option: Load PermaTabed pages on startup
+* Added: Toolbarbutton
+Released: 2009-04-09
+
+Version 1.9.0
+* Compatibility bump: Firefox 3.1 Beta 3 pre
+* Compatibility fix: Aging Tabs
+* Compatibility fix: Tabgroups-Plus (elementary)
+* Compatibility fix: ColorfulTabs (Version 3.7)
+Released: 2008-12-01
+
+Version 1.9.0 BETA 5
+* New option: PermaTab label color
+* New option: Aktivate appearance adjustment for Mac-Themes, this should solve the design problem for Mac-user.
+* Hidden option: Use special style for PermaTabs in the background in mac-style - [extensions.permatabs.macStyleBackground] - default: true
+* Compatibility fix: ChromaTabs Plus
+Released: 2008-11-07
+
+Version 1.9.0 BETA 4
+* Added compatibility: Firefox 3.1 Beta 1
+* New option: Hide Background of PermaTabs (This can fix some problems with themes)
+* Compatibility fix: ColorfulTabs
+* Compatibility fix: FlagTab
+* Some Bugfixes
+Released: 2008-10-15
+
+Version 1.9.0 BETA 3
+* New option: Do not add additional items to the context menu
+* Hidden option: Move faviconize context menu item next to the permatab context menu item(s) - [extensions.permatabs.faviconizeMenuItemReposition] - default: true
+* Hidden option: Show seperator between the faviconize context menu item and the permatab context menu item(s) - [extensions.permatabs.faviconizeMenuItemSeperator] - default: true
+* Minor bugfixes
+Released: 2008-09-23
+
+Version 1.9.0 BETA 2
+* New option: Ask before removing a permatab
+* New option: Ask before overwriting a permatab
+Released: 2008-09-17
+
+Version 1.9.0 BETA
+* New menu item: Reload current url (This is not the same as "refresh page" - it is like you go into the urlbar and press enter)
+* New menu item: Load current page in new (normal) tab (in the background)
+* New menu item: Set current site as new permatab home
+* New option: Allow input in the urlbar to load inside the permatab when it's the same domain
+* New option: Group menu items into a submenu
+* New option: Exclude PermaTab switch from submenu
+* Minor bugfixes
+Released: 2008-09-12
+
+Version 1.8.5.3
+* Bugfix: Problem with going back- and forwand in history in 1.8.5.*
+Released: 2008-09-08
+
+Version 1.8.5.2
+* Bugfix: Problem with back- and forwand-button in 1.8.5.*
+Released: 2008-09-07
+
+Version 1.8.5.1
+* Bugfix: Coloring PermaTabs in 1.8.5 didn't work
+Released: 2008-09-07
+
+Version 1.8.5
+* Compatibility fix: taboo
+* Compatibility fix: Gmail Notifier
+Released: 2008-09-05
+
+Version 1.8.4
+* Compatibility fix: duplicate tab
+* Compatibility fix: MR Tech Toolkit ("throbber" function)
+* Compatibility fix: Tab Mix Plus ("duplicate tab" function)
+Released: 2008-08-10
+
+Version 1.8.3.1
+* Minor bugfix
+Released: 2008-08-06
+
+Version 1.8.3
+* Compatibility fix: duplicate tab
+* Minor bugfixes
+Released: 2008-07-23
+
+Version 1.8.2
+* Minor bugfix
+Released: 2008-06-30
+
+Version 1.8.1
+* Bugfix: Home button overwrites PermaTabs
+Released: 2008-06-26
+
+Version 1.8.0
+* New menu item: PermaTab Home
+Released: 2008-06-25
+
+Version 1.7.0
+* Simple copy of PermaTabs 1.7.0 with Fixes for Firefox 3
+Released: 2008-06-24
