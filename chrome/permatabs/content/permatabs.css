@@ -7,9 +7,10 @@
 	display: none !important;
 }
 
-#browser tab.tabbrowser-tab[isPermaTab=true] > *
+#browser tab.tabbrowser-tab[isPermaTab=true] *
 {
 	background-color: transparent !important;
+	color: #000000 !important;
 }
 
 #browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-left { }

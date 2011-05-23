@@ -7,7 +7,7 @@ pref("extensions.permatabs.subMenu", true);
 pref("extensions.permatabs.subMenuExclude", false);
 
 pref("extensions.permatabs.distinguish", true);
-pref("extensions.permatabs.color", "#f2f2a9");
+pref("extensions.permatabs.color", "#FFCC99");
 pref("extensions.permatabs.labelSet", false);
 pref("extensions.permatabs.labelColor", "#000000");
 pref("extensions.permatabs.removeBackground", false);

@@ -2,13 +2,13 @@
 // contact   : david@donesmart.com
 // copyright : 2006-2007 donesmart ltd
 
-// modifications by deos in June - October 2008
-// bump to version Mod 1.9.0 BETA 5
+// modifications by deos in June - November 2008
+// bump to version Mod 1.9.0
 // contact: deos.dev@gmail.com
 //
 // new feature in Mod version:
 // + Added FF 3 and 3.1 support
-// - some bug fixes
+// + some bug fixes
 // + Added "Permatab Home" function
 // + Addes "Reload current url" function
 // + Added "Open current url in new (normal) tab" function
@@ -19,18 +19,19 @@
 // + Added possibility to remove background of permaTabs (can fix some theme problems)
 // + Added possibility to activate a need of confirming before disabling and overwriting permatabs
 // + Added possibility to move the faviconize menu item next to the permatab item and to add a seperator between them (only about:config)
+// + Added possibility to activate a special theme for permatabs on mac (and possibility to use additional theme for tabs in background - only about:config)
 // + compatibility fix for dublicateTab [1.0.2]
 // + compatibility fix for throbber function of MR Tech Toolkit [6.0.1 - 6.0.3.1]
 // + compatibility fix for duplicing tabs with Tab Mix Plus [0.3.7pre - 0.3.7.3]
 // + compatibility fix for gmail notifier [0.6.3.8 - 0.6.3.9]
-// + compatibility fix for ColorfulTabs [3.5]
+// + compatibility fix for ColorfulTabs [3.5 - 3.7]
 // + compatibility fix for FlagTab [2.1.3]
 // + compatibility fix for ChromaTabs Plus [2.1]
+// + compatibility fix for Aging Tabs [0.7.1]
 //
 // known issues:
 // - sometimes permatabs crashes when restarting the browser
 // - could not fix bug with dubplicateTab's openInNewWindow
-// - coloring problems with "ColorfulTabs" (problems after restarting the browser)
 // - coloring problems with "FlagTab" (problems after restarting the browser)
 //
 // hidden options:
@@ -58,6 +59,8 @@ var permaTabs =
 	colorfultabsinstalled : false,
 	flagtabinstalled : false,
 	chromatabsplusinstalled : false,
+	tabgroupsplusinstalled : false,
+	agingtabsinstalled : false,
 	
 	delayedStartupCall : false,
 	ssWillRestore : false,
@@ -146,6 +149,9 @@ var permaTabs =
 			ss.persistTabAttribute('isPermaTab');
 			ss.persistTabAttribute('permaTabId');
 			ss.persistTabAttribute('permaTabUrl');
+			
+			
+			permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')){ return $base(); } });
 
 			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'var l = this.mTabContainer.childNodes.length;', 'if(aTab.hasAttribute("isPermaTab")){ return; } var l = this.mTabContainer.childNodes.length;');   																			//FF 3.0
 			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'this._endRemoveTab(this._beginRemoveTab(aTab, true));', 'if(aTab.localName!="tab"){ aTab = this.mCurrentTab; } if(aTab.hasAttribute("isPermaTab")){ return; } this._endRemoveTab(this._beginRemoveTab(aTab, true));'); 		//FF 3.1B1
@@ -156,6 +162,7 @@ var permaTabs =
 
 			if(typeof getBrowser().updateIcon == "function")
 			{ permaTabs.utils.patchFunction('getBrowser().updateIcon', getBrowser().updateIcon, 'if (!aTab.hasAttribute("busy") && browser.mIconURL) {', 'var tabIndex = 0; var tabUrl = getBrowser().getBrowserForTab(aTab).currentURI.spec; if((tabUrl == "" || tabUrl == "about:blank") && (tabIndex = permaTabs.getPermaTabLocalIndex(aTab)) > -1) aTab.setAttribute("image", permaTabs.permaTabs[tabIndex].image); else if (!aTab.hasAttribute("busy") && browser.mIconURL) {'); }
+
 
 			var container = Components.classes["@mozilla.org/rdf/container;1"].getService(Components.interfaces.nsIRDFContainer);
 			var RDFService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
@@ -176,7 +183,7 @@ var permaTabs =
 				if(target && target.QueryInterface(Components.interfaces.nsIRDFLiteral).Value=="true")
 				{ continue; }
 
-				if(extId == '{dc572301-7619-498c-a57d-39143191b318}')		{ this.tabMixInstalled = true; 			}
+				if     (extId == '{dc572301-7619-498c-a57d-39143191b318}')	{ this.tabMixInstalled = true; 			}
 				else if(extId == 'faviconizetab@espion.just-size.jp')		{ this.faviconizeTabInstalled = true; 	}
 				else if(extId == '{61ED2A9A-39EB-4AAF-BD14-06DFBE8880C3}')	{ this.duplicateTabInstalled = true 	}
 				else if(extId == '{9669CC8F-B388-42FE-86F4-CB5E7F5A8BDC}')	{ this.mrTechToolkitInstalled = true; 	}
@@ -184,11 +191,14 @@ var permaTabs =
 				else if(extId == '{0545b830-f0aa-4d7e-8820-50a4629a56fe}')	{ this.colorfultabsinstalled = true;    }
 				else if(extId == '{11615921-d8e7-3e9a-827d-2b41d3e5e22d}')	{ this.flagtabinstalled = true;         }
 				else if(extId == '{1cff04ef-0c75-4621-ba2a-2efb77346996}')	{ this.chromatabsplusinstalled = true;	}
+				else if(extId == 'tabgroupsplus@t3approved')  				{ this.tabgroupsplusinstalled = true;	}
+				else if(extId == 'aging-tabs@design-noir.de')               { this.agingtabsinstalled = true; 		}
 			}
 			
 			this.restorePermaTabs();
 		}
 
+		//tabmix plus
 		try
 		{
 			if(this.tabMixInstalled && !window.__contentAreaClick && (typeof TMP_miniT_init == "function"))
@@ -196,15 +206,53 @@ var permaTabs =
 		}
 		catch(e){}
 
+		//faviconize
 		try
 		{
 			if(this.faviconizeTabInstalled && !document.getElementById('tabContextFaviconizeTab'))
 			{ return permaTabs.utils.wrapFunction('faviconize.ui.init', faviconize.ui.init, function(){ var ret = $base(); permaTabs.init(); return ret; }); }
 		}
 		catch(e){}
+		
+		//colorful tabs
+		try
+		{
+			if(this.colorfultabsinstalled && typeof ct.setColor == "function")
+			{ permaTabs.utils.wrapFunction('ct.setColor',ct.setColor, function(tab, tabClr){ if(!permaTabs.isPermaTab(tab)){ $base(); } } ); }
+		}
+		catch(e){}
+
+		//flagtab
+		try
+		{
+			if(this.flagtabinstalled && typeof flagTab.color == "function")
+			{ permaTabs.utils.wrapFunction('flagTab.color',flagTab.color, function(clr){ if(!permaTabs.isPermaTab(flagTab.tab)){ $base(); }else{ permaTabs.flagtabUpdateBottomBar(permaTabs.isPermaTab(flagTab.tab)); } } ); }
+
+			if(this.flagtabinstalled && typeof flagTab.clear == "function")
+			{ permaTabs.utils.wrapFunction('flagTab.clear',flagTab.clear, function(tab){ if(!permaTabs.isPermaTab(tab)){ $base(); } } ); }
+		}
+		catch(e){}
+
+		//chromatabs plus
+		try
+		{
+		    if(this.chromatabsplusinstalled && typeof CHROMATABS.colorizeTab == "function")
+		    { permaTabs.utils.wrapFunction('CHROMATABS.colorizeTab',CHROMATABS.colorizeTab, function(tab, byEventHandler){ if(permaTabs.isPermaTab(tab)){ CHROMATABS.colorBottomBar(); }else{ $base(); } } ); }
+		}
+		catch(e){}
+		
+		//aging tabs
+		try
+		{
+		    if(this.agingtabsinstalled && typeof agingTabs.setColor == "function")
+			{ permaTabs.utils.wrapFunction('agingTabs.setColor',agingTabs.setColor, function(obj, color, important){ if(!permaTabs.isPermaTab(obj)){ $base(); } } ); }
+		}
+		catch(e){}
+
 
 		if(this.ssWillRestore && !this.ssRestored)
 		{ return; }
+
 
 		this.initialized = true;
 
@@ -215,8 +263,6 @@ var permaTabs =
 
 		getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
 
-
-		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')){ return $base(); } });
 
 		permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
 
@@ -298,24 +344,21 @@ var permaTabs =
 		}
 		catch(e){}
 		
-		//flagtab
+		//tabgroups plus
 		try
 		{
-			if(this.flagtabinstalled && typeof flagTab.color == "function")
-			{ permaTabs.utils.wrapFunction('flagTab.color',flagTab.color, function(clr){ if(!permaTabs.isPermaTab(flagTab.tab)){ $base(); }else{ permaTabs.flagtabUpdateBottomBar(permaTabs.isPermaTab(flagTab.tab)); } } ); }
-
-			if(this.flagtabinstalled && typeof flagTab.clear == "function")
-			{ permaTabs.utils.wrapFunction('flagTab.clear',flagTab.clear, function(tab){ if(!permaTabs.isPermaTab(tab)){ $base(); } } ); }
+		    if(this.tabgroupsplusinstalled && typeof TG_Create_Group_Default == "function")
+			{ permaTabs.utils.patchFunction('TG_Create_Group_Default',TG_Create_Group_Default,'var group = TG_Create_Group();', 'var group = TG_Create_Group(); for(var x = 0; x < gBrowser.mTabContainer.childNodes.length; x++){ if(gBrowser.mTabContainer.childNodes[x] && gBrowser.mTabContainer.childNodes[x]!=gBrowser.selectedTab){ TG_Add_To_Group(gBrowser.mTabContainer.childNodes[x],group); } }'); }
 		}
 		catch(e){}
-
-		//chromatabs plus
+		
+		//aging tabs
 		try
 		{
-		    if(this.chromatabsplusinstalled && typeof CHROMATABS.colorizeTab == "function")
-		    { permaTabs.utils.wrapFunction('CHROMATABS.colorizeTab',CHROMATABS.colorizeTab, function(tab, byEventHandler){ if(permaTabs.isPermaTab(tab)){ CHROMATABS.colorBottomBar(); }else{ $base(); } } ); }
+		    if(this.agingtabsinstalled && typeof agingTabs.step == "function")
+			{ permaTabs.utils.patchFunction('agingTabs.step',agingTabs.step,'let tab = tabs[i];', 'let tab = tabs[i]; if(permaTabs.isPermaTab(tab)){ continue; } '); }
 		}
-		catch(e){ }
+		catch(e){}
 	},
 
 	deinit : function()
@@ -599,14 +642,14 @@ var permaTabs =
 		{
 		    if(permaTabs.prefs.getBoolPref('extensions.permatabs.macStyleBackground'))
 		    {
-				var macrule1 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left-bkgnd.png) no-repeat scroll 0% 0% !important;";
-				var macrule2 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle-bkgnd.png) repeat-x scroll 0% 0% !important;";
-				var macrule3 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right-bkgnd.png) no-repeat scroll 0% 0% !important;";
+				var macrule1 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left-bkgnd.png) no-repeat scroll top right !important;";
+				var macrule2 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle-bkgnd.png) repeat-x scroll top center !important;";
+				var macrule3 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right-bkgnd.png) no-repeat scroll top left !important;";
 			}
 
-			var macrule4 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left.png) no-repeat scroll 0% 0% !important;";
-			var macrule5 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle.png) repeat-x scroll 0% 0% !important;";
-			var macrule6 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right.png) no-repeat scroll 0% 0% !important;";
+			var macrule4 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left.png) no-repeat scroll top right !important;";
+			var macrule5 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle.png) repeat-x scroll top center !important;";
+			var macrule6 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right.png) no-repeat scroll top left !important;";
 		}
 
 		try
@@ -624,6 +667,11 @@ var permaTabs =
 				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 				    
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+
+
+					document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] * { background-color: transparent !important;' + textcolorrule + '}', document.styleSheets[x].cssRules.length);
+
 				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-left   { ' + macrule1 + '}', document.styleSheets[x].cssRules.length);
 				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-middle { ' + macrule2 + '}', document.styleSheets[x].cssRules.length);
 				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-right  { ' + macrule3 + '}', document.styleSheets[x].cssRules.length);
@@ -697,7 +745,16 @@ var permaTabs =
 		
 		
 		if(this.colorfultabsinstalled)
-		{ setTaBottomClr(); }
+		{
+		    try
+		    {
+				try
+				{ ct.setTaBottomClr(); }
+				catch(e)
+				{ setTaBottomClr(); }
+			}
+			catch(e){}
+		}
 
 		if(this.flagtabinstalled)
 		{ this.flagtabUpdateBottomBar(!isPermaTab); }
