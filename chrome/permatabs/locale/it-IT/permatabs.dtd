@@ -13,7 +13,9 @@
 
 <!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "Seleziona colore scheda permanente">
-<!ENTITY option.color.removeBackground "Remove background of PermaTabs">
+<!ENTITY option.labelColor.label "PermaTab label color">
+<!ENTITY option.removeBackground.label "Remove background of PermaTabs">
+<!ENTITY option.macStyle.label "Activate appearance adjustment for Mac-Themes">
 
 <!ENTITY option.miscBox.label "Misc.">
 <!ENTITY option.askUnset.label "Ask before removing a PermaTab">

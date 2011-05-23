@@ -13,7 +13,9 @@
 
 <!ENTITY option.designBox.label "Aussehen">
 <!ENTITY option.color.label "Farbe der permanenten Tabs">
-<!ENTITY option.color.removeBackground "Hintergrund bei permanenten Tabs entfernen">
+<!ENTITY option.labelColor.label "Farbe der Beschriftung der permanenten Tabs">
+<!ENTITY option.removeBackground.label "Hintergrund bei permanenten Tabs entfernen">
+<!ENTITY option.macStyle.label "Aussehensanpassung für Mac-Themes zulassen">
 
 <!ENTITY option.miscBox.label "Sonstiges">
 <!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">

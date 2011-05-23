@@ -3,7 +3,7 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modifications by deos in June - October 2008
-// bump to version Mod 1.9.0 BETA 4
+// bump to version Mod 1.9.0 BETA 5
 // contact: deos.dev@gmail.com
 //
 // new feature in Mod version:
@@ -20,11 +20,12 @@
 // + Added possibility to activate a need of confirming before disabling and overwriting permatabs
 // + Added possibility to move the faviconize menu item next to the permatab item and to add a seperator between them (only about:config)
 // + compatibility fix for dublicateTab [1.0.2]
-// + compatibility fix for throbber function of MR Tech Toolkit [6.0.1]
-// + compatibility fix for duplicing tabs with Tab Mix Plus [0.3.7pre]
-// + compatibility fix for gmail notifier [0.6.3.8]
-// + compatibility fix for gmail ColorfulTabs [3.5]
-// + compatibility fix for gmail FlagTab [2.1.3]
+// + compatibility fix for throbber function of MR Tech Toolkit [6.0.1 - 6.0.3.1]
+// + compatibility fix for duplicing tabs with Tab Mix Plus [0.3.7pre - 0.3.7.3]
+// + compatibility fix for gmail notifier [0.6.3.8 - 0.6.3.9]
+// + compatibility fix for ColorfulTabs [3.5]
+// + compatibility fix for FlagTab [2.1.3]
+// + compatibility fix for ChromaTabs Plus [2.1]
 //
 // known issues:
 // - sometimes permatabs crashes when restarting the browser
@@ -35,7 +36,8 @@
 // hidden options:
 // - move the faviconize menu item next to the permatab item(s): 						extensions.permatabs.faviconizeMenuItemReposition		default: true
 // - use a seperator between the faviconize menu item and the permatabs menu item(s): 	extensions.permatabs.faviconizeMenuItemSeperator		default: true
-// (changing these options requires restarting the browser to take affect)
+// - use a special style for permatabs in background in mac-style: 						extensions.permatabs.macStyleBackground					default: true
+// (changing these options in about:config requires restarting the browser or opening and saving the options to take affect)
 
 
 var permaTabs =
@@ -55,6 +57,7 @@ var permaTabs =
 	gmailnotifierinstalled : false,
 	colorfultabsinstalled : false,
 	flagtabinstalled : false,
+	chromatabsplusinstalled : false,
 	
 	delayedStartupCall : false,
 	ssWillRestore : false,
@@ -166,12 +169,10 @@ var permaTabs =
 				var extId = element.Value.replace('urn:mozilla:item:', '');
 
 				var target = extManager.GetTarget(element, RDFService.GetResource("http://www.mozilla.org/2004/em-rdf#appDisabled"), true);
-
 				if(target && target.QueryInterface(Components.interfaces.nsIRDFLiteral).Value=="true")
 				{ continue; }
 
 				target = extManager.GetTarget(element, RDFService.GetResource("http://www.mozilla.org/2004/em-rdf#userDisabled"), true);
-
 				if(target && target.QueryInterface(Components.interfaces.nsIRDFLiteral).Value=="true")
 				{ continue; }
 
@@ -182,6 +183,7 @@ var permaTabs =
 				else if(extId == '{44d0a1b4-9c90-4f86-ac92-8680b5d6549e}')	{ this.gmailnotifierinstalled = true; 	}
 				else if(extId == '{0545b830-f0aa-4d7e-8820-50a4629a56fe}')	{ this.colorfultabsinstalled = true;    }
 				else if(extId == '{11615921-d8e7-3e9a-827d-2b41d3e5e22d}')	{ this.flagtabinstalled = true;         }
+				else if(extId == '{1cff04ef-0c75-4621-ba2a-2efb77346996}')	{ this.chromatabsplusinstalled = true;	}
 			}
 			
 			this.restorePermaTabs();
@@ -230,11 +232,13 @@ var permaTabs =
 
 		try
 		{
+		    //FF 3.0
 			permaTabs.utils.patchFunction('handleURLBarCommand',handleURLBarCommand,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,"$1$2$4 permaTabs.tempAllowSameUrlDomain(); $5 permaTabs.tempAllowed = false; $7 ");
 			permaTabs.utils.patchFunction('handleURLBarCommand',handleURLBarCommand,/(return)(.*?)([;])/g,"permaTabs.tempAllowed = false; $1$2$3 ");
 		}
 		catch(e)
 		{
+		    //FF 3.1
 			permaTabs.utils.patchFunction('gURLBar.handleCommand',gURLBar.handleCommand,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,"$1$2$4 permaTabs.tempAllowSameUrlDomain(); $5 permaTabs.tempAllowed = false; $7 ");
 			permaTabs.utils.patchFunction('gURLBar.handleCommand',gURLBar.handleCommand,/(return)(.*?)([;])/g,"permaTabs.tempAllowed = false; $1$2$3 ");
 		}
@@ -304,6 +308,14 @@ var permaTabs =
 			{ permaTabs.utils.wrapFunction('flagTab.clear',flagTab.clear, function(tab){ if(!permaTabs.isPermaTab(tab)){ $base(); } } ); }
 		}
 		catch(e){}
+
+		//chromatabs plus
+		try
+		{
+		    if(this.chromatabsplusinstalled && typeof CHROMATABS.colorizeTab == "function")
+		    { permaTabs.utils.wrapFunction('CHROMATABS.colorizeTab',CHROMATABS.colorizeTab, function(tab, byEventHandler){ if(permaTabs.isPermaTab(tab)){ CHROMATABS.colorBottomBar(); }else{ $base(); } } ); }
+		}
+		catch(e){ }
 	},
 
 	deinit : function()
@@ -573,7 +585,29 @@ var permaTabs =
 	colorPermaTabs : function()
 	{
 		var colorrule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')) ? 'background-color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.color") + ' !important;' : '');
+		var textcolorrule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.labelSet')) ? 'color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.labelColor") + ' !important;' : '');
 		var imagerule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.removeBackground')) ? 'background-image: none !important' : '');
+		
+	    var macrule1 = "";
+		var macrule2 = "";
+		var macrule3 = "";
+	    var macrule4 = "";
+		var macrule5 = "";
+		var macrule6 = "";
+
+		if(permaTabs.prefs.getBoolPref('extensions.permatabs.macStyle'))
+		{
+		    if(permaTabs.prefs.getBoolPref('extensions.permatabs.macStyleBackground'))
+		    {
+				var macrule1 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left-bkgnd.png) no-repeat scroll 0% 0% !important;";
+				var macrule2 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle-bkgnd.png) repeat-x scroll 0% 0% !important;";
+				var macrule3 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right-bkgnd.png) no-repeat scroll 0% 0% !important;";
+			}
+
+			var macrule4 = "background: transparent url(chrome://permatabs/content/images/mac-tab-left.png) no-repeat scroll 0% 0% !important;";
+			var macrule5 = "background: transparent url(chrome://permatabs/content/images/mac-tab-middle.png) repeat-x scroll 0% 0% !important;";
+			var macrule6 = "background: transparent url(chrome://permatabs/content/images/mac-tab-right.png) no-repeat scroll 0% 0% !important;";
+		}
 
 		try
 		{
@@ -582,11 +616,23 @@ var permaTabs =
 				if(document.styleSheets[x].href == 'chrome://permatabs/content/permatabs.css')
 				{
 					document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
-					document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 
-					document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] {' + imagerule + '}', document.styleSheets[x].cssRules.length);
-					document.styleSheets[x].insertRule('#browser .tabbrowser-tab[isPermaTab=true] {' + colorrule + '}', document.styleSheets[x].cssRules.length);
-					
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
+				    
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-left   { ' + macrule1 + '}', document.styleSheets[x].cssRules.length);
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-middle { ' + macrule2 + '}', document.styleSheets[x].cssRules.length);
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-right  { ' + macrule3 + '}', document.styleSheets[x].cssRules.length);
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-left   { ' + macrule4 + '}', document.styleSheets[x].cssRules.length);
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-middle { ' + macrule5 + '}', document.styleSheets[x].cssRules.length);
+				    document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-right  { ' + macrule6 + '}', document.styleSheets[x].cssRules.length);
+
+					document.styleSheets[x].insertRule('#browser tab.tabbrowser-tab[isPermaTab=true] {' + colorrule + textcolorrule + imagerule + '}', document.styleSheets[x].cssRules.length);
+
 					break;
 				}
 			}
@@ -649,10 +695,16 @@ var permaTabs =
 		currentTab.style.removeProperty('background-color');
 		currentTab.style.removeProperty('color');
 		
+		
 		if(this.colorfultabsinstalled)
 		{ setTaBottomClr(); }
-		else if(this.flagtabinstalled)
+
+		if(this.flagtabinstalled)
 		{ this.flagtabUpdateBottomBar(!isPermaTab); }
+
+		if(this.chromatabsplusinstalled)
+		{ CHROMATABS.colorizeTab(currentTab, true); }
+
 
 		if(loadurl)
 		{ getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).loadURI(url); }
@@ -691,12 +743,6 @@ var permaTabs =
 		permatabdata['title'] = currentTab.label;
 		permatabdata['url'] = url;
 		permatabdata['image'] = currentTab.getAttribute('image');
-
-		if(typeof window.setColor == "function")
-		{
-			for(var i = 0 ; i < document.getAnonymousNodes(currentTab).length; i++)
-			{ document.getAnonymousNodes(currentTab)[i].style.setProperty("background-color", '' ,''); }
-		}
 
 		permaTabs.savePermaTabs();
 	},

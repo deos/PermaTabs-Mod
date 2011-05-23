@@ -71,7 +71,9 @@ function PrefsWindow()
 					 "ForceNewTabsDomain" 		: "permaTabsPrefForceNewTabsDomain",
 					 "HideAdditionalMenuItems" 	: "permaTabsPrefHideAdditionalMenuItems",
 					 "SubMenu" 					: "permaTabsPrefSubMenu",
-					 "Distinguish" 				: "permaTabsPrefDistinguish" };
+					 "Distinguish" 				: "permaTabsPrefDistinguish",
+					 "LabelSet"					: "permaTabsPrefLabelSet",
+					 "MacStyle"					: "permaTabsPrefMacStyle" };
 
 		for(i in pref)
 		{
@@ -86,6 +88,11 @@ function PrefsWindow()
 		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (pref['HideAdditionalMenuItems'] || !pref['SubMenu']));
 
 		document.getElementById('permaTabsPrefColor').setAttribute('disabled', !pref['Distinguish']);
+		document.getElementById('permaTabsPrefLabelColor').setAttribute('disabled', !pref['LabelSet']);
+
+		document.getElementById('permaTabsPrefForceColor').setAttribute('disabled', pref['MacStyle']);
+		if(pref['MacStyle'])
+		{ document.getElementById('permaTabsPrefForceColor').setAttribute('checked', true); }
 	};
 }
 this.prefsWindow = new PrefsWindow;

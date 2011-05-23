@@ -65,9 +65,23 @@
 				<colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" />
 			</hbox>
 			
+		    <hbox>
+				<checkbox id="permaTabsPrefLabelSet"
+						  label="&option.labelColor.label;"
+						  pref="extensions.permatabs.labelSet"
+						  command="cmdPermaTabsPrefDisableFields" />
+
+				<colorpicker id="permaTabsPrefLabelColor" type="button" pref="extensions.permatabs.labelColor" />
+			</hbox>
+
 			<checkbox id="permaTabsPrefForceColor"
-					  label="&option.color.removeBackground;"
+					  label="&option.removeBackground.label;"
 					  pref="extensions.permatabs.removeBackground" />
+
+			<checkbox id="permaTabsPrefMacStyle"
+					  label="&option.macStyle.label;"
+					  pref="extensions.permatabs.macStyle"
+					  command="cmdPermaTabsPrefDisableFields" />
 		</vbox>
 	</groupbox>
 
