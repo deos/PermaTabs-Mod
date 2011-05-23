@@ -3,9 +3,11 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June 2008 (or at least tried to do this)
+// Added Permatab Home function and bump to version 1.8.0
+// known issues: home button overwrites permatabs, sometimes there is no menue-entry for permatabbing, problems with opening a whole bookmark folder
 // contact: deos.hab@freenet.de
 
-var permaTabs = 
+var permaTabs =
 {
   version : [1,7,0],
   prevVersion : false,
@@ -25,13 +27,14 @@ var permaTabs =
   firstInstall : false,
   firstInit : true,
   firstWindow : true,
-  
+  tempAllowed : false,
+
   __init : function()
   {
-    if(this.initialized) 
+    if(this.initialized)
       return;
 
-    if(!this.delayedStartupCall) 
+    if(!this.delayedStartupCall)
     {
       this.delayedStartupCall = true;
       permaTabs.utils.patchFunction('window.delayedStartup', window.delayedStartup, 'AugmentTabs.init();', 'permaTabs.init(); AugmentTabs.init();');
@@ -40,36 +43,36 @@ var permaTabs =
 
     var firstInit = this.firstInit;
     this.firstInit = false;
-    
+
     var enumerator = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator).getEnumerator("navigator:browser");
     var currentWindow;
     while(enumerator.hasMoreElements() && (currentWindow = enumerator.getNext()))
     {
       if(!currentWindow)
         continue;
-        
+
       if(firstInit && currentWindow != window)
         this.firstWindow = false;
 
       currentWindow.removeEventListener("focus", currentWindow.permaTabs.init, false);
-      
+
       if(currentWindow.permaTabs && currentWindow.permaTabs.initialized)
         return;
     }
-    
+
     if(!this.prerequisites)
     {
       this.prerequisites = true;
-    
+
       this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
       this.tabContextMenu = document.getElementById('content').mStrip.childNodes[1];
       this.OS = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS;
-        
+
       if(this.prefs.getPrefType("extensions.permatabs.permatabs.urls") != this.prefs.PREF_STRING ||
          this.prefs.getPrefType("extensions.permatabs.permatabs.titles") != this.prefs.PREF_STRING ||
          this.prefs.getPrefType("extensions.permatabs.permatabs.images") != this.prefs.PREF_STRING)
       {
-      
+
         this.firstInstall = true;
         var sites = {
           news :            [{'url': 'http://news.google.com/',    'title': 'Google News',        'image': 'http://www.google.com/favicon.ico'},
@@ -95,15 +98,15 @@ var permaTabs =
         for(x in save)
           this.prefs.setCharPref('extensions.permatabs.permatabs.' + x, save[x].join('\n'));
       }
-    
-      var ss = Cc["@mozilla.org/browser/sessionstartup;1"].getService(Ci.nsISessionStartup); 
+
+      var ss = Cc["@mozilla.org/browser/sessionstartup;1"].getService(Ci.nsISessionStartup);
       this.ssWillRestore = ss.doRestore() && this.firstWindow;
-      
+
       ss = Components.classes["@mozilla.org/browser/sessionstore;1"].getService(Components.interfaces.nsISessionStore);
-      ss.persistTabAttribute('isPermaTab');   
+      ss.persistTabAttribute('isPermaTab');
       ss.persistTabAttribute('permaTabId');
       ss.persistTabAttribute('permaTabUrl');
-      
+
       permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'var l = this.mTabContainer.childNodes.length;', 'if(aTab.hasAttribute("isPermaTab")) return; var l = this.mTabContainer.childNodes.length;');
       permaTabs.utils.patchFunction('getBrowser().warnAboutClosingTabs', getBrowser().warnAboutClosingTabs, 'var numTabs = this.mTabContainer.childNodes.length;', 'var numTabs = this.mTabContainer.childNodes.length - permaTabs.permaTabs.length; if(!aAll && getBrowser().mContextTab && permaTabs.isPermaTab(getBrowser().mContextTab)) numTabs++;');
 
@@ -112,10 +115,10 @@ var permaTabs =
 
 	  permaTabs.utils.patchFunction('getBrowser().setTabTitle', getBrowser().setTabTitle, 'if (!title) {', 'var tabIndex = 0; var tabUrl = getBrowser().getBrowserForTab(aTab).currentURI.spec; if((tabUrl == "" || tabUrl == "about:blank") && (tabIndex = permaTabs.getPermaTabLocalIndex(aTab)) > -1) title = permaTabs.permaTabs[tabIndex].title; if (!title) {');
       if(typeof getBrowser().updateIcon == "function")
-        permaTabs.utils.patchFunction('getBrowser().updateIcon', getBrowser().updateIcon, 'if (!aTab.hasAttribute("busy") && browser.mIconURL) {', 'var tabIndex = 0; var tabUrl = getBrowser().getBrowserForTab(aTab).currentURI.spec; if((tabUrl == "" || tabUrl == "about:blank") && (tabIndex = permaTabs.getPermaTabLocalIndex(aTab)) > -1) aTab.setAttribute("image", permaTabs.permaTabs[tabIndex].image); else if (!aTab.hasAttribute("busy") && browser.mIconURL) {');     
-    
+        permaTabs.utils.patchFunction('getBrowser().updateIcon', getBrowser().updateIcon, 'if (!aTab.hasAttribute("busy") && browser.mIconURL) {', 'var tabIndex = 0; var tabUrl = getBrowser().getBrowserForTab(aTab).currentURI.spec; if((tabUrl == "" || tabUrl == "about:blank") && (tabIndex = permaTabs.getPermaTabLocalIndex(aTab)) > -1) aTab.setAttribute("image", permaTabs.permaTabs[tabIndex].image); else if (!aTab.hasAttribute("busy") && browser.mIconURL) {');
+
       this.restorePermaTabs();
-    
+
       var container = Components.classes["@mozilla.org/rdf/container;1"].getService(Components.interfaces.nsIRDFContainer);
       var RDFService = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
       var extManager = Components.classes["@mozilla.org/extensions/manager;1"].getService(Components.interfaces.nsIExtensionManager).datasource;
@@ -126,12 +129,12 @@ var permaTabs =
       {
         var element = elements.getNext().QueryInterface(Components.interfaces.nsIRDFResource);
         var extId = element.Value.replace('urn:mozilla:item:', '');
-     
+
         var target = extManager.GetTarget(element, RDFService.GetResource("http://www.mozilla.org/2004/em-rdf#userDisabled"), true);
-        var disabled = false;      
+        var disabled = false;
         if(target instanceof Components.interfaces.nsIRDFInt || target instanceof Components.interfaces.nsIRDFLiteral)
           disabled = target.Value;
-        
+
         if(extId == '{dc572301-7619-498c-a57d-39143191b318}' && !disabled) this.tabMixInstalled = true;
         else if(extId == 'faviconizetab@espion.just-size.jp' && !disabled) this.faviconizeTabInstalled = true;
       }
@@ -139,37 +142,37 @@ var permaTabs =
 
     if(this.tabMixInstalled && !window.__contentAreaClick)
       return permaTabs.utils.wrapFunction('window.TMP_miniT_init', TMP_miniT_init, function(){ if(typeof tablib == "undefined") return null; var ret = $base(); permaTabs.init(); return ret;});
-    
+
     if(this.faviconizeTabInstalled && !document.getElementById('tabContextFaviconizeTab'))
       return permaTabs.utils.wrapFunction('faviconize.ui.init', faviconize.ui.init, function(){ var ret = $base(); permaTabs.init(); return ret; });
-    
+
     if(this.ssWillRestore && !this.ssRestored)
       return;
-    
+
     this.initialized = true;
-    
-    window.removeEventListener("load", function() { permaTabs.init(); }, false); 
-    window.removeEventListener("DOMContentLoaded", function() { permaTabs.init(); }, false); 
-      
+
+    window.removeEventListener("load", function() { permaTabs.init(); }, false);
+    window.removeEventListener("DOMContentLoaded", function() { permaTabs.init(); }, false);
+
     this.tabContextMenu.addEventListener("popupshowing", permaTabs.updateContextMenu, false);
 
     getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
-    
+
     permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') || permaTabs.OS == 'Darwin') return $base();})
     permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
 
     permaTabs.utils.wrapFunction('window.loadURI', window.loadURI, this.patchedLoadURI);
     permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
     permaTabs.utils.wrapFunction('window.BrowserHome', window.BrowserHome, this.patchedBrowserHome);
-    permaTabs.utils.wrapFunction('window.BrowserHomeClick', window.BrowserHomeClick, this.patchedBrowserHomeClick);    
-    
+    permaTabs.utils.wrapFunction('window.BrowserHomeClick', window.BrowserHomeClick, this.patchedBrowserHomeClick);
+
     var ver = false;
     if(((isset = this.prefs.getPrefType("extensions.permatabs.version")) != this.prefs.PREF_STRING) ||
        ((ver = this.prefs.getCharPref("extensions.permatabs.version")) != this.version.join('.')))
     {
       if(!this.firstInstall)
         this.prevVersion = ver ? ver.split('.') : [1,2,0];
-  
+
       this.prefs.setCharPref("extensions.permatabs.version", this.version.join('.'));
     }
 
@@ -177,12 +180,12 @@ var permaTabs =
 
     if(this.faviconizeTabInstalled)
     {
-      permaTabs.utils.wrapFunction('faviconize.toggle', faviconize.toggle, 
+      permaTabs.utils.wrapFunction('faviconize.toggle', faviconize.toggle,
         function(tab)
         {
           if(!tab || tab.localName != 'tab')
-            tab = gBrowser.mCurrentTab;      
-              
+            tab = gBrowser.mCurrentTab;
+
           var ret = $base();
 
           if(permaTabs.isPermaTab(tab))
@@ -190,12 +193,12 @@ var permaTabs =
             permaTabs.permaTabs[permaTabs.getPermaTabLocalIndex(tab)].faviconized = tab.hasAttribute('faviconized') ? 1 : 0;
             permaTabs.savePermaTabs();
           }
-          
+
           return ret;
         });
     }
   },
-  
+
   init : function()
   {
     permaTabs.__init();
@@ -245,12 +248,14 @@ var permaTabs =
         closeMenuItem =  permaTabs.tabContextMenu.childNodes[x];
         break;
       }
-  
+
     if(!permaTabs.menuItemsAdded)
     {
-      var menuItem = document.createElement("menuitem");
       var togglePermText = document.getElementById("permatabStrings").getString("tab.togglePermanence.label");
+      var togglePermHomeText = document.getElementById("permatabStrings").getString("tab.PermaHome.label");
       var togglePermKey = document.getElementById("permatabStrings").getString("tab.togglePermanence.accessKey");
+
+      var menuItem = document.createElement("menuitem");
       menuItem.setAttribute("label", togglePermText);
       menuItem.setAttribute("accesskey", togglePermKey);
       menuItem.setAttribute("id", "permaTabContextMenuItemMakePermanent");
@@ -259,13 +264,22 @@ var permaTabs =
       menuItem.setAttribute("key", "permaTabAccel");
       permaTabs.tabContextMenu.insertBefore(menuItem, closeMenuItem.previousSibling);
 
-      if(!permaTabs.tabMixInstalled) 
+	  if(!permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') || permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain'))
+	  {
+	      var menuItem2 = document.createElement("menuitem");
+	      menuItem2.setAttribute("label", togglePermHomeText);
+	      menuItem2.setAttribute("id", "permaTabContextMenuItemPermanentHome");
+	      menuItem2.setAttribute("oncommand", "permaTabs.goHome();");
+	      permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem.previousSibling);
+	  }
+	  
+      if(!permaTabs.tabMixInstalled)
       {
         separator = document.createElement("menuseparator");
         separator.setAttribute("id", "permaTabContextMenuSeparator");
         permaTabs.tabContextMenu.insertBefore(separator, menuItem);
       }
-      
+
       if(permaTabs.OS == 'Darwin')
       {
         var key = document.getElementById('permaTabAccel');
@@ -277,6 +291,7 @@ var permaTabs =
 
     var isPermaTab = (getBrowser().mContextTab && permaTabs.isPermaTab(getBrowser().mContextTab));
     document.getElementById("permaTabContextMenuItemMakePermanent").setAttribute("checked", isPermaTab);
+    if(document.getElementById("permaTabContextMenuItemPermanentHome")){ document.getElementById("permaTabContextMenuItemPermanentHome").setAttribute("disabled", !isPermaTab); }
     closeMenuItem.setAttribute('disabled', isPermaTab);
   },
 
@@ -306,7 +321,7 @@ var permaTabs =
     for(var x = 0; x < permaTabs.permaTabs.length; x++)
       if(permaTabs.permaTabs[x].id == id)
         return permaTabs.permaTabs[x];
-  
+
     return false;
   },
 
@@ -333,33 +348,33 @@ var permaTabs =
       var currentTab = getBrowser().mCurrentTab;
     else
       var currentTab = getBrowser().mContextTab;
-     
+
     var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).currentURI.spec;
     var isPermaTab = permaTabs.isPermaTab(currentTab);
-    
+
     if(!toggleCurrentTab)
       document.getElementById('permaTabContextMenuItemMakePermanent').setAttribute('checked', !isPermaTab);
 
     if(!isPermaTab)
     {
-      if(currentTab.hasAttribute('permaTabUrl') && (url == '' || url == 'about:blank') && 
+      if(currentTab.hasAttribute('permaTabUrl') && (url == '' || url == 'about:blank') &&
       getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).sessionHistory.count == 0)
         url = currentTab.getAttribute('permaTabUrl');
-  
+
       var id = permaTabs.getNextId();
       currentTab.setAttribute('isPermaTab', true);
       currentTab.setAttribute('permaTabId', id);
       currentTab.setAttribute('permaTabUrl', url);
 
       var faviconized = currentTab.hasAttribute('faviconized') ? 1 : 0;
-      
+
       permaTabs.permaTabs[permaTabs.permaTabs.length] = {'id'          : id,
                                                          'title'       : currentTab.label,
                                                          'url'         : url,
                                                          'image'       : currentTab.getAttribute('image'),
-                                                         'faviconized' : faviconized};  
+                                                         'faviconized' : faviconized};
 
-      if(window.setColor)     
+      if(window.setColor)
         for(var i= 0 ; i < document.getAnonymousNodes(currentTab).length; i++)
           document.getAnonymousNodes(currentTab)[i].style.setProperty("background-color", '' ,'');
     }
@@ -375,15 +390,28 @@ var permaTabs =
     permaTabs.savePermaTabs();
   },
 
+  goHome : function(toggleCurrentTab)
+  {
+    if(toggleCurrentTab)
+      var currentTab = getBrowser().mCurrentTab;
+    else
+      var currentTab = getBrowser().mContextTab;
+
+    getBrowser().selectedTab = currentTab;
+	permaTabs.tempAllowed = true;
+
+	openUILink(currentTab.getAttribute("permaTabUrl"),false,false,true);
+  },
+
   restorePermaTabs : function()
   {
     var restore = {};
     for(var x in {'ids':'', 'urls':'', 'titles':'', 'images':'', 'faviconizeds':''})
       restore[x] = this.prefs.getCharPref('extensions.permatabs.permatabs.' + x).split("\n");
-    
+
     var makeIds = restore.ids == '' && restore.urls != '';
     var makeFaviconizeds = restore.faviconizeds == '';
-    
+
     this.colorPermaTabs();
 
     for(var i = (restore.urls.length - 1); i >= 0; i--)
@@ -392,9 +420,9 @@ var permaTabs =
         continue;
 
       var id = !makeIds ? restore.ids[i] : this.getNextId();
-        
+
       this.permaTabs[this.permaTabs.length] = {
-        'id'           : id, 
+        'id'           : id,
         'title'        : restore.titles[i],
         'url'          : restore.urls[i],
         'image'        : restore.images[i],
@@ -403,16 +431,16 @@ var permaTabs =
 
     if(makeIds)
       this.savePermaTabs();
-    
+
     if(permaTabs.ssWillRestore)
       document.addEventListener("SSTabRestoring", permaTabs.handleSessionStoreTabRestore, false);
   },
-  
+
   showAllPermaTabs : function()
   {
     for(var i = 0; i < permaTabs.permaTabs.length; i++)
       permaTabs.showPermaTab(permaTabs.permaTabs[i].id);
-        
+
     getBrowser().tabContainer.addEventListener("TabMove", function(){permaTabs.savePermaTabs();}, false);
   },
 
@@ -422,27 +450,27 @@ var permaTabs =
       for(var x = 0; x < getBrowser().mTabContainer.childNodes.length; x++)
         if((i = this.getPermaTabLocalIndex(getBrowser().mTabContainer.childNodes[x])) > -1)
           order.push(i);
-      
+
     for(var x = 0; x < this.permaTabs.length; x++)
     {
       var cont = false;
         for(var i = 0; i < order.length; i++)
-          if(order[i] == x) 
+          if(order[i] == x)
             cont = true;
-        
+
       if(!cont)
         order.push(x);
-    } 
-  
+    }
+
     var save = {'id' : '', 'url' : '', 'title' : '', 'image' : '', 'faviconized' : ''};
-  
+
     for(var i = 0; i < order.length; i++)
       for(x in save)
         save[x] += this.permaTabs[order[i]][x].toString() + ((i + 1 < order.length) ? "\n" : "");
-  
+
     for(i in save)
       this.prefs.setCharPref("extensions.permatabs.permatabs." + i + "s", save[i]);
-      
+
     this.prefs.savePrefFile(null);
   },
 
@@ -463,39 +491,39 @@ var permaTabs =
 
   shouldOpenInNewTab : function(linkNode)
   {
-    return (linkNode.hasAttribute('href') &&                                                     
-            !/javascript\s*:/.test(linkNode.getAttribute('href').toLowerCase()) &&               
-            permaTabs.isPermaTab(getBrowser().mCurrentTab) &&                                    
-            permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') &&                  
-            !(linkNode.host && linkNode.host == getBrowser().mCurrentBrowser.currentURI.host &&  
-            permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain')) &&           
-            (!linkNode.href || linkNode.getAttribute('href').indexOf('#') != 0))                 
+    return (linkNode.hasAttribute('href') &&
+            !/javascript\s*:/.test(linkNode.getAttribute('href').toLowerCase()) &&
+            permaTabs.isPermaTab(getBrowser().mCurrentTab) &&
+            permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') &&
+            !(linkNode.host && linkNode.host == getBrowser().mCurrentBrowser.currentURI.host &&
+            permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain')) &&
+            (!linkNode.href || linkNode.getAttribute('href').indexOf('#') != 0))
   },
-  
+
   patchedContentAreaClick : function(event, fieldNormalClicks)
   {
     if(!event.isTrusted)
       return true;
-    
+
     var target = permaTabs.getActualLinkNode(event.target);
-  
-    if(!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && event.button != 1 && event.button != 2 && permaTabs.shouldOpenInNewTab(target) && !event.getPreventDefault()) 
+
+    if(!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && event.button != 1 && event.button != 2 && permaTabs.shouldOpenInNewTab(target) && !event.getPreventDefault())
     {
       var newEvent = document.createEvent("MouseEvents");
-      
+
       if(permaTabs.OS != 'Darwin')
         newEvent.initMouseEvent("click", event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, true, event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget);
       else
         newEvent.initMouseEvent("click", event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, true, event.button, event.relatedTarget);
-        
+
       event.preventDefault();
       event.stopPropagation();
-      
+
       event.target.dispatchEvent(newEvent);
-      
+
       return false;
     }
-          
+
     return $base();
   },
 
@@ -505,9 +533,9 @@ var permaTabs =
     {
       if(aTriggeringEvent instanceof MouseEvent && aTriggeringEvent.button == 2)
         return;
-    
+
       var url = gURLBar.value;
-      
+
       if(aTriggeringEvent)
       {
         handleURLBarRevert();
@@ -516,9 +544,9 @@ var permaTabs =
         aTriggeringEvent.preventDefault();
         aTriggeringEvent.stopPropagation();
       }
-      else  
-        gBrowser.loadOneTab(url, null, null, aPostData, false, true); 
-      
+      else
+        gBrowser.loadOneTab(url, null, null, aPostData, false, true);
+
       content.focus();
     }
     else
@@ -527,9 +555,10 @@ var permaTabs =
 
   patchedLoadURI : function(uri, referrer, postData, allowThirdPartyFixup)
   {
-    if(permaTabs.isPermaTab(getBrowser().mCurrentTab))
+    if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed)
       gBrowser.loadOneTab(uri, referrer, null, postData, false, allowThirdPartyFixup);
     else
+      permaTabs.tempAllowed = false;
       $base();
   },
 
@@ -546,13 +575,13 @@ var permaTabs =
   patchedBrowserHomeClick : function(aEvent)
   {
     if(aEvent.button == 2)
-      return; 
-    
+      return;
+
     if(whereToOpenLink(aEvent) == 'current' && permaTabs.isPermaTab(getBrowser().mCurrentTab))
     {
       try{ getBrowser().loadTabs(gHomeButton.getHomePage().split("|"), false, false); }catch(e){};
     }
-    else   
+    else
       $base();
   },
 
@@ -560,13 +589,13 @@ var permaTabs =
   {
     var props = permaTabs.getPermaTabById(id);
     var tabs = getBrowser().mTabContainer.getElementsByAttribute('permaTabId', id);
-    var tab = null;   
-    
+    var tab = null;
+
     if(!(tabs && (tab = tabs[0])))
     {
       tab = getBrowser().addTab();
       getBrowser().moveTabTo(tab, 0);
-  
+
       tab.setAttribute('isPermaTab', true);
       tab.setAttribute('permaTabId', props.id);
       tab.setAttribute('permaTabUrl', props.url);
@@ -574,8 +603,8 @@ var permaTabs =
       getBrowser().setTabTitle(tab);
       getBrowser().updateIcon(tab);
     }
-    
-    if(permaTabs.faviconizeTabInstalled && props.faviconized && !tab.hasAttribute('faviconized')) 
+
+    if(permaTabs.faviconizeTabInstalled && props.faviconized && !tab.hasAttribute('faviconized'))
       faviconize.toggle(tab);
   },
 
@@ -592,11 +621,11 @@ var permaTabs =
   {
     var id = permaTabs.prefs.getIntPref("extensions.permatabs.nextId");
     permaTabs.prefs.setIntPref("extensions.permatabs.nextId", id + 1);
-  
-    return id; 
+
+    return id;
   },
 
-  utils : 
+  utils :
   {
     wrappedFunctions : {},
 
@@ -604,11 +633,11 @@ var permaTabs =
     {
       if(permaTabs.utils.wrappedFunctions[name])
         return;
-  
+
       permaTabs.utils.wrappedFunctions[name] = orig;
       eval(name + ' = ' + wrapper.toString().replace('$base()', 'permaTabs.utils.wrappedFunctions["' + name + '"].apply(this, arguments);'));
     },
-  
+
     patchFunction : function(name, func, search, replace)
     {
       eval(name + ' = ' + func.toString().replace(search, replace));
@@ -616,6 +645,6 @@ var permaTabs =
   }
 }
 
-window.addEventListener("load", function() { permaTabs.init(); }, false); 
-window.addEventListener("DOMContentLoaded", function() { permaTabs.init(); }, false); 
+window.addEventListener("load", function() { permaTabs.init(); }, false);
+window.addEventListener("DOMContentLoaded", function() { permaTabs.init(); }, false);
 window.addEventListener("unload", function() { permaTabs.deinit(); }, false);
