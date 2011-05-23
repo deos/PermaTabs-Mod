@@ -58,6 +58,18 @@
 	  </box>
   </groupbox>
   
+  <groupbox>
+	  <caption label="&option.miscBox.label;"/>
+
+	  <checkbox id="permaTabsPrefAskUnset"
+	            label="&option.askUnset.label;"
+	            pref="extensions.permatabs.askUnset" />
+
+	  <checkbox id="permaTabsPrefAskOverwrite"
+	            label="&option.askOverwrite.label;"
+	            pref="extensions.permatabs.askOverwrite" />
+  </groupbox>
+  
   <command id="cmdPermaTabsPrefForceNewTabs"
            oncommand="document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked'));
 		   			  document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked') &amp;&amp; !document.getElementById('permaTabsPrefForceNewTabsDomain').getAttribute('checked')));" />

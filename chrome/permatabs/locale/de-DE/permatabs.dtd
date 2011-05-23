@@ -1,4 +1,4 @@
-﻿<!ENTITY options.label "PermaTab Einstellungen">
+<!ENTITY options.label "PermaTab Einstellungen">
 <!ENTITY options.accesskey "e">
 
 <!ENTITY option.ruleBox.label "Regeln">
@@ -12,3 +12,7 @@
 
 <!ENTITY option.designBox.label "Aussehen">
 <!ENTITY option.color.label "Farbe der permanenten Tabs">
+
+<!ENTITY option.miscBox.label "Sonstiges">
+<!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">
+<!ENTITY option.askOverwrite.label "Sicherheitsabfrage vor überschreiben der Startseite eines Permatabs">

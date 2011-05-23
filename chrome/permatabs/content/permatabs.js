@@ -3,7 +3,7 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.9.0 BETA
+// bump to version mod 1.9.0 BETA 2
 // contact: deos.hab@freenet.de
 //
 // new feature:
@@ -15,6 +15,7 @@
 // + Addes "set current tab as home of this permatab" function
 // + Added possibility to merge the menu items into a submenu
 // + Added possibility to allow urlbar input inside the same domain not to load in a new tab
+// + Added possibility to activate a need of confirming before disabling and overwriting permatabs
 // + compatibility fix for dublicateTab (duplicate in new window is still buggy)
 // + compatibility fix for MR Tech Toolkit (especially its throbber function)
 // + compatibility fix for duplicing tabs with Tab Mix Plus
@@ -556,8 +557,15 @@ var permaTabs =
 		}
 		else
 		{
-			currentTab.removeAttribute('isPermaTab');
-			permaTabs.permaTabs.splice(permaTabs.getPermaTabLocalIndex(currentTab), 1);
+		    if(!permaTabs.prefs.getBoolPref('extensions.permatabs.askUnset') || confirm(document.getElementById("permatabStrings").getString("tab.askUnset.label"))==true)
+		    {
+				currentTab.removeAttribute('isPermaTab');
+				permaTabs.permaTabs.splice(permaTabs.getPermaTabLocalIndex(currentTab), 1);
+			}
+			else
+			{
+				isPermaTab = !isPermaTab;
+			}
 		}
 
 		if(currentTab == getBrowser().mCurrentTab)
@@ -583,6 +591,9 @@ var permaTabs =
 	{
 		var currentTab = getBrowser().mContextTab;
 		if(!permaTabs.isPermaTab(currentTab)){ return false; }
+		
+		if(permaTabs.prefs.getBoolPref('extensions.permatabs.askOverwrite') && confirm(document.getElementById("permatabStrings").getString("tab.askOverwrite.label"))!=true)
+		{ return false; }
 
 		var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).currentURI.spec;
         currentTab.setAttribute('permaTabUrl', url);

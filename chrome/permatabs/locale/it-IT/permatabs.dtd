@@ -12,3 +12,7 @@
 
 <!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "Seleziona colore scheda permanente">
+
+<!ENTITY option.miscBox.label "Misc.">
+<!ENTITY option.askUnset.label "Ask before removing a PermaTab">
+<!ENTITY option.askOverwrite.label "Ask before overwriting a PermaTab Home">
