@@ -1,5 +1,8 @@
 pref("extensions.permatabs.forceNewTabs", true);
 pref("extensions.permatabs.forceNewTabsDomain", false);
+pref("extensions.permatabs.allowUrlbarDomain", false);
+pref("extensions.permatabs.subMenu", true);
+pref("extensions.permatabs.subMenuExclude", false);
 pref("extensions.permatabs.distinguish", true);
 pref("extensions.permatabs.color", "#f2f2a9");
 pref("extensions.permatabs.nextId", 100);

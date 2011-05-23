@@ -1,5 +1,14 @@
 <!ENTITY options.label "永久标签选项">
 <!ENTITY options.accesskey "r">
+
+<!ENTITY option.ruleBox.label "Rules">
 <!ENTITY option.forceNewTab.label "强制永久标签中的链接始终在新标签中打开">
 <!ENTITY option.forceNewTabDomain.label "上一条规则中排除相同域名的链接">
+<!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
+
+<!ENTITY option.menuBox.label "Context menu">
+<!ENTITY option.subMenu.label "Merge menu items into a submenu">
+<!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
+
+<!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "永久标签颜色">

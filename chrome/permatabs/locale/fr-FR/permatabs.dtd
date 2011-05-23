@@ -1,5 +1,14 @@
 <!ENTITY options.label "Options de PermaTab">
 <!ENTITY options.accesskey "P">
+
+<!ENTITY option.ruleBox.label "Rules">
 <!ENTITY option.forceNewTab.label "Forcer les liens contenus dans les onglets permanents à toujours s&apos;ouvrir dans un nouvel onglet">
 <!ENTITY option.forceNewTabDomain.label "Exclure les liens d&apos;un même domaine de la règle ci-dessus">
+<!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
+
+<!ENTITY option.menuBox.label "Context menu">
+<!ENTITY option.subMenu.label "Merge menu items into a submenu">
+<!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
+
+<!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "Couleur des onglets permanents">

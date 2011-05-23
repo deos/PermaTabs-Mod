@@ -1,5 +1,14 @@
 <!ENTITY options.label "PermaTabオプション">
 <!ENTITY options.accesskey "r">
+
+<!ENTITY option.ruleBox.label "Rules">
 <!ENTITY option.forceNewTab.label "常に新しいタブでpermatabs中のリンクを開く">
 <!ENTITY option.forceNewTabDomain.label "同じドメインへのリンクは除外する">
+<!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
+
+<!ENTITY option.menuBox.label "Context menu">
+<!ENTITY option.subMenu.label "Merge menu items into a submenu">
+<!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
+
+<!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "PermaTabの色">

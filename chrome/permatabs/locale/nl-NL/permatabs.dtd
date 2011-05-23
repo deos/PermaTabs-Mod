@@ -1,5 +1,14 @@
 <!ENTITY options.label "PermaTab Opties">
 <!ENTITY options.accesskey "r">
+
+<!ENTITY option.ruleBox.label "Rules">
 <!ENTITY option.forceNewTab.label "Verwijzingen in Permatabs moeten altijd in een nieuw tabblad openen">
 <!ENTITY option.forceNewTabDomain.label "Verwijzingen naar hetzelfde domein van bovenstaande regel uitsluiten">
+<!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
+
+<!ENTITY option.menuBox.label "Context menu">
+<!ENTITY option.subMenu.label "Merge menu items into a submenu">
+<!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
+
+<!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "PermaTab kleur">

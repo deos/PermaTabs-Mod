@@ -3,7 +3,7 @@
 
 <!DOCTYPE dialog SYSTEM "chrome://permatabs/locale/permatabs.dtd">
 
-<dialog id="permaTabsPrefWindow" 
+<dialog id="permaTabsPrefWindow"
         title="&options.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept,cancel"
@@ -11,28 +11,61 @@
         onload="prefsWindow.sync();" >
   <script type="application/x-javascript" src="chrome://permatabs/content/prefsWindow.js" />
 
-  <checkbox id="permaTabsPrefForceNewTabs" 
-            label="&option.forceNewTab.label;" 
-            pref="extensions.permatabs.forceNewTabs" 
-            command="cmdPermaTabsPrefForceNewTabs" />
 
-  <checkbox id="permaTabsPrefForceNewTabsDomain" 
-            label="&option.forceNewTabDomain.label;" 
-            pref="extensions.permatabs.forceNewTabsDomain"
-            class="indent" />
+  <groupbox>
+	  <caption label="&option.ruleBox.label;"/>
 
-  <command id="cmdPermaTabsPrefForceNewTabs" 
-           oncommand="document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked'));" />
+	  <checkbox id="permaTabsPrefForceNewTabs"
+	            label="&option.forceNewTab.label;"
+	            pref="extensions.permatabs.forceNewTabs"
+	            command="cmdPermaTabsPrefForceNewTabs" />
 
-  <checkbox id="permaTabsPrefDistinguish" 
-            label="&option.color.label;" 
-            pref="extensions.permatabs.distinguish" 
-            command="cmdPermaTabsPrefDistinguish" />
-  <box>
-    <colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" class="indent" />
-  </box>
+	  <checkbox id="permaTabsPrefForceNewTabsDomain"
+	            label="&option.forceNewTabDomain.label;"
+	            pref="extensions.permatabs.forceNewTabsDomain"
+	            command="cmdPermaTabsPrefForceNewTabs"
+	            class="indent" />
+	            
+	  <checkbox id="permaTabsPrefAllowUrlbarDomain"
+	            label="&option.AllowUrlbarDomain.label;"
+	            pref="extensions.permatabs.allowUrlbarDomain" />
+  </groupbox>
+  
+  <groupbox>
+	  <caption label="&option.menuBox.label;"/>
 
-  <command id="cmdPermaTabsPrefDistinguish" 
+	  <checkbox id="permaTabsPrefSubMenu"
+	            label="&option.subMenu.label;"
+	            pref="extensions.permatabs.subMenu"
+	            command="cmdPermaTabsPrefSubMenu" />
+
+	  <checkbox id="permaTabsPrefSubMenuExclude"
+	            label="&option.subMenuExclude.label;"
+	            pref="extensions.permatabs.subMenuExclude"
+	            class="indent" />
+  </groupbox>
+  
+  <groupbox orient="horizontal">
+	  <caption label="&option.designBox.label;"/>
+
+	  <checkbox id="permaTabsPrefDistinguish"
+	            label="&option.color.label;"
+	            pref="extensions.permatabs.distinguish"
+	            command="cmdPermaTabsPrefDistinguish" />
+
+	  <box>
+	    <colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" />
+	  </box>
+  </groupbox>
+  
+  <command id="cmdPermaTabsPrefForceNewTabs"
+           oncommand="document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked'));
+		   			  document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked') &amp;&amp; !document.getElementById('permaTabsPrefForceNewTabsDomain').getAttribute('checked')));" />
+
+  <command id="cmdPermaTabsPrefSubMenu"
+           oncommand="document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', !document.getElementById('permaTabsPrefSubMenu').getAttribute('checked'));" />
+
+  <command id="cmdPermaTabsPrefDistinguish"
            oncommand="document.getElementById('permaTabsPrefColor').setAttribute('disabled', !document.getElementById('permaTabsPrefDistinguish').getAttribute('checked'));" />
-    
+
 </dialog>

@@ -3,27 +3,31 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.8.5.3
+// bump to version mod 1.9.0 BETA
 // contact: deos.hab@freenet.de
 //
 // new feature:
-// - FF 3 support
+// + Added FF 3 support
 // - some bug fixes
-// - Added "Permatab Home" function
-// - compatibility fix for dublicateTab (duplicate in new window is still buggy)
-// - compatibility fix for MR Tech Toolkit (especially its throbber function)
-// - compatibility fix for duplicing tabs with Tab Mix Plus
-// - compatibility fix for gmail notifier
+// + Added "Permatab Home" function
+// + Addes "Reload current url" function
+// + Added "Open current url in new (normal) tab" function
+// + Addes "set current tab as home of this permatab" function
+// + Added possibility to merge the menu items into a submenu
+// + Added possibility to allow urlbar input inside the same domain not to load in a new tab
+// + compatibility fix for dublicateTab (duplicate in new window is still buggy)
+// + compatibility fix for MR Tech Toolkit (especially its throbber function)
+// + compatibility fix for duplicing tabs with Tab Mix Plus
+// + compatibility fix for gmail notifier
 //
 // known issues:
 // - sometimes there is no menue-entry for permatabbing <-- appears to be nearly fixed, but can still appear when restarting the browser
-// - problems with opening a whole bookmark folder (FF3 bug)
 // - could not fix bug with dubplicateTab's openInNewWindow
 
 
 var permaTabs =
 {
-	version : [1,8,5],
+	version : [1,9,0],
 	prevVersion : false,
 	prerequisites : false,
 	initialized : false,
@@ -181,6 +185,7 @@ var permaTabs =
 
 		getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
 
+
 		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')) return $base();})
 
 		permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
@@ -188,12 +193,13 @@ var permaTabs =
 		permaTabs.utils.wrapFunction('window.loadURI', window.loadURI, this.patchedLoadURI);
 		permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
 
-		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,'return "current";','if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed){ return "tab"; }else{ permaTabs.tempAllowed = false; return "current"; }');
+		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,'return "current";','if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed){ return "tab"; }else{ return "current"; }');
 		permaTabs.utils.patchFunction('BrowserBack',BrowserBack,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
 		permaTabs.utils.patchFunction('BrowserForward',BrowserForward,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
 		permaTabs.utils.patchFunction('gotoHistoryIndex',gotoHistoryIndex,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
 
-		permaTabs.utils.patchFunction('BrowserGoHome',BrowserGoHome,'loadOneOrMoreURIs(homePage);','if(permaTabs.isPermaTab(getBrowser().mCurrentTab)){ urls = homePage.split("|"); var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false); gBrowser.loadTabs(urls, loadInBackground); }else{ loadOneOrMoreURIs(homePage); }');
+		permaTabs.utils.patchFunction('handleURLBarCommand',handleURLBarCommand,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,"$1$2$4 permaTabs.tempAllowSameUrlDomain(); $5 permaTabs.tempAllowed = false; $7 ");
+		permaTabs.utils.patchFunction('handleURLBarCommand',handleURLBarCommand,/(return)(.*?)([;])/g,"permaTabs.tempAllowed = false; $1$2$3 ");
 
 
 		var ver = false;
@@ -319,49 +325,134 @@ var permaTabs =
 			}
 		}
 
+		//delete and rebuild contextmenu when options changed
+		if(permaTabs.menuItemsAdded && ((document.getElementById('permaTabsSubMenu') ? true : false)!=permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu') || document.getElementById('permaTabContextMenuItemMakePermanent').hasAttribute('excluded')!=(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenuExclude') && permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu'))))
+		{
+			var ids = {	1: "permaTabContextMenuItemMakePermanent",
+						2: "permaTabContextMenuItemPermanentHome",
+						3: "permaTabContextMenuItemReloadCurrentUrl",
+						4: "permaTabContextMenuItemOpenInTab",
+						5: "permaTabContextMenuItemPermanentHomeSet",
+						6: "permaTabsSubMenuList",
+						7: "permaTabsSubMenu",
+						8: "permaTabsSeperator",
+						9: "permaTabsSeperatorTMP" };
+
+			for(var x = 0; x < permaTabs.tabContextMenu.childNodes.length; x++)
+			{
+	            for(i in ids)
+	            {
+	                if(permaTabs.tabContextMenu.childNodes[x].getAttribute("id")==ids[i])
+	                {
+	                    permaTabs.tabContextMenu.removeChild(permaTabs.tabContextMenu.childNodes[x]);
+	                }
+	            }
+			}
+            
+		    permaTabs.menuItemsAdded = false;
+		}
+
+		//building contextmenu
 		if(!permaTabs.menuItemsAdded)
 		{
-			var togglePermText = document.getElementById("permatabStrings").getString("tab.togglePermanence.label");
-			var togglePermHomeText = document.getElementById("permatabStrings").getString("tab.PermaHome.label");
-			var togglePermKey = document.getElementById("permatabStrings").getString("tab.togglePermanence.accessKey");
-
-			var menuItem = document.createElement("menuitem");
-			menuItem.setAttribute("label", togglePermText);
-			menuItem.setAttribute("accesskey", togglePermKey);
-			menuItem.setAttribute("id", "permaTabContextMenuItemMakePermanent");
-			menuItem.setAttribute("oncommand", "permaTabs.togglePermanence();");
-			menuItem.setAttribute("type", "checkbox");
-			menuItem.setAttribute("key", "permaTabAccel");
-			permaTabs.tabContextMenu.insertBefore(menuItem, closeMenuItem.previousSibling);
-
-			if(!permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') || permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain'))
+			if(permaTabs.tabMixInstalled)
 			{
-				var menuItem2 = document.createElement("menuitem");
-				menuItem2.setAttribute("label", togglePermHomeText);
-				menuItem2.setAttribute("id", "permaTabContextMenuItemPermanentHome");
-				menuItem2.setAttribute("oncommand", "permaTabs.goHome();");
-				permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem.previousSibling);
+				var seperator = document.createElement("menuseparator");
+				seperator.setAttribute("id","permaTabsSeperatorTMP");
+				permaTabs.tabContextMenu.insertBefore(seperator, closeMenuItem);
 			}
 
-			if(!permaTabs.tabMixInstalled)
+
+			var menuItem1 = document.createElement("menuitem");
+			menuItem1.setAttribute("label", document.getElementById("permatabStrings").getString("tab.togglePermanence.label"));
+			menuItem1.setAttribute("accesskey", document.getElementById("permatabStrings").getString("tab.togglePermanence.accessKey"));
+			menuItem1.setAttribute("id", "permaTabContextMenuItemMakePermanent");
+			menuItem1.setAttribute("oncommand", "permaTabs.togglePermanence();");
+			menuItem1.setAttribute("type", "checkbox");
+			menuItem1.setAttribute("key", "permaTabAccel");
+
+			var menuItem2 = document.createElement("menuitem");
+			menuItem2.setAttribute("label", document.getElementById("permatabStrings").getString("tab.goPermaHome.label"));
+			menuItem2.setAttribute("id", "permaTabContextMenuItemPermanentHome");
+			menuItem2.setAttribute("oncommand", "permaTabs.goHome();");
+
+			var menuItem3 = document.createElement("menuitem");
+			menuItem3.setAttribute("label", document.getElementById("permatabStrings").getString("tab.reloadCurrentUrl.label"));
+			menuItem3.setAttribute("id", "permaTabContextMenuItemReloadCurrentUrl");
+			menuItem3.setAttribute("oncommand", "permaTabs.reloadCurrentUrl();");
+
+			var menuItem4 = document.createElement("menuitem");
+			menuItem4.setAttribute("label", document.getElementById("permatabStrings").getString("tab.openCurrentInTab.label"));
+			menuItem4.setAttribute("id", "permaTabContextMenuItemOpenInTab");
+			menuItem4.setAttribute("oncommand", "permaTabs.openCurrentInTab();");
+
+			var menuItem5 = document.createElement("menuitem");
+			menuItem5.setAttribute("label", document.getElementById("permatabStrings").getString("tab.setPermaHome.label"));
+			menuItem5.setAttribute("id", "permaTabContextMenuItemPermanentHomeSet");
+			menuItem5.setAttribute("oncommand", "permaTabs.setHome();");
+
+
+			if(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu'))
 			{
-				separator = document.createElement("menuseparator");
-				separator.setAttribute("id", "permaTabContextMenuSeparator");
-				permaTabs.tabContextMenu.insertBefore(separator, menuItem);
+				var submenu = document.createElement("menu");
+				submenu.setAttribute("label", document.getElementById("permatabStrings").getString("tab.subMenu.label"));
+				submenu.setAttribute("id","permaTabsSubMenu");
+
+				var submenulist = document.createElement("menupopup");
+				submenulist.setAttribute("id","permaTabsSubMenuList");
+
+			    if(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenuExclude'))
+			    {
+					menuItem1.setAttribute("excluded",true);
+				    permaTabs.tabContextMenu.insertBefore(menuItem1, closeMenuItem);
+				}
+				else
+				{
+					submenulist.appendChild(menuItem1);
+					submenulist.appendChild(document.createElement("menuseparator"));
+				}
+				
+				submenulist.appendChild(menuItem2);
+				submenulist.appendChild(menuItem3);
+				submenulist.appendChild(menuItem4);
+				submenulist.appendChild(document.createElement("menuseparator"));
+				submenulist.appendChild(menuItem5);
+
+				submenu.appendChild(submenulist);
+				permaTabs.tabContextMenu.insertBefore(submenu, closeMenuItem);
 			}
+			else
+			{
+			    permaTabs.tabContextMenu.insertBefore(menuItem1, closeMenuItem);
+				permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem);
+				permaTabs.tabContextMenu.insertBefore(menuItem3, closeMenuItem);
+				permaTabs.tabContextMenu.insertBefore(menuItem4, closeMenuItem);
+				permaTabs.tabContextMenu.insertBefore(menuItem5, closeMenuItem);
+			}
+
+			var seperator = document.createElement("menuseparator");
+			seperator.setAttribute("id","permaTabsSeperator");
+			permaTabs.tabContextMenu.insertBefore(seperator, closeMenuItem);
 
 			if(permaTabs.OS == 'Darwin')
 			{
 				var key = document.getElementById('permaTabAccel');
 				key.setAttribute('modifiers', 'accel,shift');
 			}
+			
 
 			permaTabs.menuItemsAdded = true;
 		}
 
 		var isPermaTab = (getBrowser().mContextTab && permaTabs.isPermaTab(getBrowser().mContextTab));
+		var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(getBrowser().mContextTab)).currentURI.spec;
+		var validurl = !(url == '' || url == 'about:blank');
+		
 		document.getElementById("permaTabContextMenuItemMakePermanent").setAttribute("checked", isPermaTab);
-		if(document.getElementById("permaTabContextMenuItemPermanentHome")){ document.getElementById("permaTabContextMenuItemPermanentHome").hidden = !isPermaTab; }
+		document.getElementById("permaTabContextMenuItemPermanentHome").setAttribute("disabled",!isPermaTab);
+		document.getElementById("permaTabContextMenuItemReloadCurrentUrl").setAttribute("disabled",(!isPermaTab || !validurl));
+		document.getElementById("permaTabContextMenuItemOpenInTab").setAttribute("disabled",(!isPermaTab || !validurl));
+		document.getElementById("permaTabContextMenuItemPermanentHomeSet").setAttribute("disabled",(!isPermaTab || !validurl || url==getBrowser().mContextTab.getAttribute("permaTabUrl")));
 		closeMenuItem.setAttribute('disabled', isPermaTab);
 	},
 
@@ -475,17 +566,71 @@ var permaTabs =
 		permaTabs.savePermaTabs();
 	},
 
-	goHome : function(toggleCurrentTab)
+	goHome : function()
 	{
-		if(toggleCurrentTab)
-		{ var currentTab = getBrowser().mCurrentTab; }
-		else
-		{ var currentTab = getBrowser().mContextTab; }
+		var currentTab = getBrowser().mContextTab;
+		if(!permaTabs.isPermaTab(currentTab)){ return false; }
 
+		var url = currentTab.getAttribute("permaTabUrl");
 		getBrowser().selectedTab = currentTab;
-		permaTabs.tempAllowed = true;
 
-		getBrowser().mCurrentBrowser.loadURI(currentTab.getAttribute("permaTabUrl"));
+		permaTabs.tempAllowed = true;
+		getBrowser().mCurrentBrowser.loadURI(url);
+		permaTabs.tempAllowed = false;
+	},
+	
+	setHome : function()
+	{
+		var currentTab = getBrowser().mContextTab;
+		if(!permaTabs.isPermaTab(currentTab)){ return false; }
+
+		var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).currentURI.spec;
+        currentTab.setAttribute('permaTabUrl', url);
+
+        var permatabdata = permaTabs.permaTabs[permaTabs.getPermaTabLocalIndex(currentTab)];
+        permatabdata['title'] = currentTab.label;
+        permatabdata['url'] = url;
+        permatabdata['image'] = currentTab.getAttribute('image');
+
+		if(typeof window.setColor == "function")
+		{
+			for(var i = 0 ; i < document.getAnonymousNodes(currentTab).length; i++)
+			{ document.getAnonymousNodes(currentTab)[i].style.setProperty("background-color", '' ,''); }
+		}
+		
+		permaTabs.savePermaTabs();
+	},
+
+	reloadCurrentUrl : function()
+	{
+		var currentTab = getBrowser().mContextTab;
+		if(!permaTabs.isPermaTab(currentTab)){ return false; }
+
+		var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).currentURI.spec;
+		getBrowser().selectedTab = currentTab;
+
+		permaTabs.tempAllowed = true;
+		getBrowser().mCurrentBrowser.loadURI(url);
+		permaTabs.tempAllowed = false;
+	},
+
+	tempAllowSameUrlDomain : function()
+	{
+		if(	permaTabs.isPermaTab(getBrowser().mCurrentTab) &&
+			(permaTabs.prefs.getBoolPref('extensions.permatabs.allowUrlbarDomain') &&
+			(!permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') ||
+			permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabsDomain'))) &&
+			gURLBar.value.replace(/[htfps]{3,}:\/\/([^\/]*)\/*.*/i,'$1')==getBrowser().mCurrentBrowser.currentURI.host)
+			{ permaTabs.tempAllowed = true; }
+	},
+
+	openCurrentInTab : function()
+	{
+		var currentTab = getBrowser().mContextTab;
+		var url = getBrowser().getBrowserAtIndex(permaTabs.getTabBrowserIndex(currentTab)).currentURI.spec;
+
+        var tab = getBrowser().addTab(url);
+        tab.focus();
 	},
 
 	restorePermaTabs : function()
@@ -610,7 +755,7 @@ var permaTabs =
 
 	patchedBrowserLoadURL : function(aTriggeringEvent, aPostData)
 	{
-		if(permaTabs.isPermaTab(getBrowser().mCurrentTab))
+		if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed)
 		{
 			if(aTriggeringEvent instanceof MouseEvent && aTriggeringEvent.button == 2)
 			return;
@@ -632,6 +777,8 @@ var permaTabs =
 		}
 		else
 		{ return $base(); }
+		
+		permaTabs.tempAllowed = false;
 	},
 
 	patchedLoadURI : function(uri, referrer, postData, allowThirdPartyFixup)
@@ -640,6 +787,7 @@ var permaTabs =
 		{ gBrowser.loadOneTab(uri, referrer, null, postData, false, allowThirdPartyFixup); }
 		else
 		{ permaTabs.tempAllowed = false; }
+		
 		$base();
 	},
 
