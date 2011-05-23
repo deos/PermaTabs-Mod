@@ -2,20 +2,22 @@
 // contact   : david@donesmart.com
 // copyright : 2006-2007 donesmart ltd
 
-// modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.9.0 BETA 2
-// contact: deos.hab@freenet.de
+// modifications by deos in June - September 2008
+// bump to version Mod 1.9.0 BETA 3
+// contact: deos.dev@gmail.com
 //
-// new feature:
+// new feature in Mod version:
 // + Added FF 3 support
 // - some bug fixes
 // + Added "Permatab Home" function
 // + Addes "Reload current url" function
 // + Added "Open current url in new (normal) tab" function
 // + Addes "set current tab as home of this permatab" function
+// + Addes possibility to hide all additional context menu options
 // + Added possibility to merge the menu items into a submenu
 // + Added possibility to allow urlbar input inside the same domain not to load in a new tab
 // + Added possibility to activate a need of confirming before disabling and overwriting permatabs
+// + Added possibility to move the faviconize menu item next to the permatab item and to add a seperator between them (only about:config)
 // + compatibility fix for dublicateTab (duplicate in new window is still buggy)
 // + compatibility fix for MR Tech Toolkit (especially its throbber function)
 // + compatibility fix for duplicing tabs with Tab Mix Plus
@@ -24,6 +26,11 @@
 // known issues:
 // - sometimes there is no menue-entry for permatabbing <-- appears to be nearly fixed, but can still appear when restarting the browser
 // - could not fix bug with dubplicateTab's openInNewWindow
+//
+// hidden options:
+// - move the faviconize menu item next to the permatab item(s): 						extensions.permatabs.faviconizeMenuItemReposition   	default: true
+// - use a seperator between the faviconize menu item and the permatabs menu item(s): 	extensions.permatabs.faviconizeMenuItemSeperator    	default: true
+// (changing these options requires restarting the browser to take affect)
 
 
 var permaTabs =
@@ -314,20 +321,33 @@ var permaTabs =
 
 	updateContextMenu : function(e)
 	{
-		var closeTabText = document.getElementById("tabBrowserStrings").getString("tabs.closeTab");
+		var closeTabID = "context_closeTab";
 		var closeMenuItem = permaTabs.tabContextMenu.lastChild;
 
 		for(var x = 0; x < permaTabs.tabContextMenu.childNodes.length; x++)
 		{
-			if(permaTabs.tabContextMenu.childNodes[x].label == closeTabText)
+			if(permaTabs.tabContextMenu.childNodes[x].getAttribute("id") == closeTabID)
 			{
 				closeMenuItem =  permaTabs.tabContextMenu.childNodes[x];
 				break;
 			}
 		}
-
+		
+		if(permaTabs.prefs.getBoolPref('extensions.permatabs.hideAdditionalMenuItems'))
+		{
+			var optionsChanged = (permaTabs.menuItemsAdded &&
+								 ((document.getElementById('permaTabsSubMenu') ? true : false) || (document.getElementById('permaTabContextMenuItemPermanentHome') ? true : false)));
+		}
+		else
+		{
+			var optionsChanged = (permaTabs.menuItemsAdded &&
+								 ((document.getElementById('permaTabsSubMenu') ? true : false) != permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu') ||
+								 document.getElementById('permaTabContextMenuItemMakePermanent').hasAttribute('excluded') != (permaTabs.prefs.getBoolPref('extensions.permatabs.subMenuExclude') && permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu')) ||
+								 !document.getElementById('permaTabContextMenuItemPermanentHome')));
+		}
+		
 		//delete and rebuild contextmenu when options changed
-		if(permaTabs.menuItemsAdded && ((document.getElementById('permaTabsSubMenu') ? true : false)!=permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu') || document.getElementById('permaTabContextMenuItemMakePermanent').hasAttribute('excluded')!=(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenuExclude') && permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu'))))
+		if(optionsChanged)
 		{
 			var ids = {	1: "permaTabContextMenuItemMakePermanent",
 						2: "permaTabContextMenuItemPermanentHome",
@@ -337,30 +357,46 @@ var permaTabs =
 						6: "permaTabsSubMenuList",
 						7: "permaTabsSubMenu",
 						8: "permaTabsSeperator",
-						9: "permaTabsSeperatorTMP" };
+						9: "permaTabsSeperatorTMP",
+						10:"permaTabsSeperatorFAV" };
 
-			for(var x = 0; x < permaTabs.tabContextMenu.childNodes.length; x++)
-			{
-	            for(i in ids)
-	            {
-	                if(permaTabs.tabContextMenu.childNodes[x].getAttribute("id")==ids[i])
-	                {
-	                    permaTabs.tabContextMenu.removeChild(permaTabs.tabContextMenu.childNodes[x]);
-	                }
-	            }
-			}
-            
-		    permaTabs.menuItemsAdded = false;
+			var failed = 0;
+			
+            for(i in ids)
+            {
+				try
+				{
+					permaTabs.tabContextMenu.removeChild(document.getElementById(ids[i]));
+				}
+				catch(e){ failed++; }
+            }
 		}
 
 		//building contextmenu
-		if(!permaTabs.menuItemsAdded)
+		if(!permaTabs.menuItemsAdded || (optionsChanged && failed<10))
 		{
 			if(permaTabs.tabMixInstalled)
 			{
 				var seperator = document.createElement("menuseparator");
 				seperator.setAttribute("id","permaTabsSeperatorTMP");
 				permaTabs.tabContextMenu.insertBefore(seperator, closeMenuItem);
+			}
+			
+			if(permaTabs.faviconizeTabInstalled && permaTabs.prefs.getBoolPref('extensions.permatabs.faviconizeMenuItemReposition'))
+			{
+			    try
+			    {
+					var faviconizeMenuItem = permaTabs.tabContextMenu.removeChild(document.getElementById('tabContextFaviconizeTab'));
+                    permaTabs.tabContextMenu.insertBefore(faviconizeMenuItem, closeMenuItem);
+
+					if(permaTabs.prefs.getBoolPref('extensions.permatabs.faviconizeMenuItemSeperator'))
+					{
+						var seperator = document.createElement("menuseparator");
+						seperator.setAttribute("id","permaTabsSeperatorFAV");
+						permaTabs.tabContextMenu.insertBefore(seperator, closeMenuItem);
+					}
+			    }
+				catch(e){}
 			}
 
 
@@ -393,7 +429,7 @@ var permaTabs =
 			menuItem5.setAttribute("oncommand", "permaTabs.setHome();");
 
 
-			if(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu'))
+			if(permaTabs.prefs.getBoolPref('extensions.permatabs.subMenu') && !permaTabs.prefs.getBoolPref('extensions.permatabs.hideAdditionalMenuItems'))
 			{
 				var submenu = document.createElement("menu");
 				submenu.setAttribute("label", document.getElementById("permatabStrings").getString("tab.subMenu.label"));
@@ -412,23 +448,27 @@ var permaTabs =
 					submenulist.appendChild(menuItem1);
 					submenulist.appendChild(document.createElement("menuseparator"));
 				}
-				
+
 				submenulist.appendChild(menuItem2);
 				submenulist.appendChild(menuItem3);
 				submenulist.appendChild(menuItem4);
 				submenulist.appendChild(document.createElement("menuseparator"));
 				submenulist.appendChild(menuItem5);
 
-				submenu.appendChild(submenulist);
+			    submenu.appendChild(submenulist);
 				permaTabs.tabContextMenu.insertBefore(submenu, closeMenuItem);
 			}
 			else
 			{
 			    permaTabs.tabContextMenu.insertBefore(menuItem1, closeMenuItem);
-				permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem);
-				permaTabs.tabContextMenu.insertBefore(menuItem3, closeMenuItem);
-				permaTabs.tabContextMenu.insertBefore(menuItem4, closeMenuItem);
-				permaTabs.tabContextMenu.insertBefore(menuItem5, closeMenuItem);
+
+				if(!permaTabs.prefs.getBoolPref('extensions.permatabs.hideAdditionalMenuItems'))
+				{
+					permaTabs.tabContextMenu.insertBefore(menuItem2, closeMenuItem);
+					permaTabs.tabContextMenu.insertBefore(menuItem3, closeMenuItem);
+					permaTabs.tabContextMenu.insertBefore(menuItem4, closeMenuItem);
+					permaTabs.tabContextMenu.insertBefore(menuItem5, closeMenuItem);
+				}
 			}
 
 			var seperator = document.createElement("menuseparator");

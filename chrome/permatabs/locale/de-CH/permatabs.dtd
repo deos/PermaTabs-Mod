@@ -7,6 +7,7 @@
 <!ENTITY option.AllowUrlbarDomain.label "Eingaben in die Adressleiste innerhalb derselben Domain nicht in neuem Tab öffnen">
 
 <!ENTITY option.menuBox.label "Kontextmenü">
+<!ENTITY option.hideAdditionalMenuItems.label "Zusätzliche Kontextmenüeinträge ausblenden">
 <!ENTITY option.subMenu.label "Menüpunkte in einem Untermenü zusammenfassen">
 <!ENTITY option.subMenuExclude.label "Den PermaTabs Schalter davon ausnehmen">
 

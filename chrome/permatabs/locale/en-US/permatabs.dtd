@@ -7,6 +7,7 @@
 <!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
 
 <!ENTITY option.menuBox.label "Context menu">
+<!ENTITY option.hideAdditionalMenuItems.label "Do not show additional context menu items">
 <!ENTITY option.subMenu.label "Merge menu items into a submenu">
 <!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
 

@@ -2,7 +2,7 @@ content  permatabs  chrome/permatabs/content/
 overlay  chrome://browser/content/browser.xul  chrome://permatabs/content/permatabs.xul
 locale   permatabs  en-US  chrome/permatabs/locale/en-US/
 locale   permatabs  cs-CZ  chrome/permatabs/locale/cs-CZ/
-locale   permatabs  de-DE  chrome/permatabs/locale/de-DE/ 
+locale   permatabs  de-DE  chrome/permatabs/locale/de-CH/ 
 locale   permatabs  de-CH  chrome/permatabs/locale/de-CH/
 locale   permatabs  fr-FR  chrome/permatabs/locale/fr-FR/
 locale   permatabs  it-IT  chrome/permatabs/locale/it-IT/

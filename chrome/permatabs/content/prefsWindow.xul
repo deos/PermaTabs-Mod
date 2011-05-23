@@ -18,12 +18,12 @@
 	  <checkbox id="permaTabsPrefForceNewTabs"
 	            label="&option.forceNewTab.label;"
 	            pref="extensions.permatabs.forceNewTabs"
-	            command="cmdPermaTabsPrefForceNewTabs" />
+	            command="cmdPermaTabsPrefDisableFields" />
 
 	  <checkbox id="permaTabsPrefForceNewTabsDomain"
 	            label="&option.forceNewTabDomain.label;"
 	            pref="extensions.permatabs.forceNewTabsDomain"
-	            command="cmdPermaTabsPrefForceNewTabs"
+	            command="cmdPermaTabsPrefDisableFields"
 	            class="indent" />
 	            
 	  <checkbox id="permaTabsPrefAllowUrlbarDomain"
@@ -34,10 +34,15 @@
   <groupbox>
 	  <caption label="&option.menuBox.label;"/>
 
+	  <checkbox id="permaTabsPrefHideAdditionalMenuItems"
+	            label="&option.hideAdditionalMenuItems.label;"
+	            pref="extensions.permatabs.hideAdditionalMenuItems"
+	            command="cmdPermaTabsPrefDisableFields" />
+
 	  <checkbox id="permaTabsPrefSubMenu"
 	            label="&option.subMenu.label;"
 	            pref="extensions.permatabs.subMenu"
-	            command="cmdPermaTabsPrefSubMenu" />
+	            command="cmdPermaTabsPrefDisableFields" />
 
 	  <checkbox id="permaTabsPrefSubMenuExclude"
 	            label="&option.subMenuExclude.label;"
@@ -51,7 +56,7 @@
 	  <checkbox id="permaTabsPrefDistinguish"
 	            label="&option.color.label;"
 	            pref="extensions.permatabs.distinguish"
-	            command="cmdPermaTabsPrefDistinguish" />
+	            command="cmdPermaTabsPrefDisableFields" />
 
 	  <box>
 	    <colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" />
@@ -70,14 +75,7 @@
 	            pref="extensions.permatabs.askOverwrite" />
   </groupbox>
   
-  <command id="cmdPermaTabsPrefForceNewTabs"
-           oncommand="document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked'));
-		   			  document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked') &amp;&amp; !document.getElementById('permaTabsPrefForceNewTabsDomain').getAttribute('checked')));" />
-
-  <command id="cmdPermaTabsPrefSubMenu"
-           oncommand="document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', !document.getElementById('permaTabsPrefSubMenu').getAttribute('checked'));" />
-
-  <command id="cmdPermaTabsPrefDistinguish"
-           oncommand="document.getElementById('permaTabsPrefColor').setAttribute('disabled', !document.getElementById('permaTabsPrefDistinguish').getAttribute('checked'));" />
+  <command id="cmdPermaTabsPrefDisableFields"
+           oncommand="prefsWindow.disablefields();" />
 
 </dialog>
