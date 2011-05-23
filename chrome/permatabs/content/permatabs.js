@@ -3,7 +3,7 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.8.5.2
+// bump to version mod 1.8.5.3
 // contact: deos.hab@freenet.de
 //
 // new feature:
@@ -181,7 +181,7 @@ var permaTabs =
 
 		getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
 
-		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') /*|| permaTabs.OS == 'Darwin'*/) return $base();})
+		permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')) return $base();})
 
 		permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
 
@@ -189,8 +189,9 @@ var permaTabs =
 		permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
 
 		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,'return "current";','if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed){ return "tab"; }else{ permaTabs.tempAllowed = false; return "current"; }');
-		permaTabs.utils.patchFunction('BrowserBack',BrowserBack,/(function)(.*?)({)/,'$1$2$3 permaTabs.tempAllowed = true;');
-		permaTabs.utils.patchFunction('BrowserForward',BrowserForward,/(function)(.*?)({)/,'$1$2$3 permaTabs.tempAllowed = true;');
+		permaTabs.utils.patchFunction('BrowserBack',BrowserBack,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
+		permaTabs.utils.patchFunction('BrowserForward',BrowserForward,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
+		permaTabs.utils.patchFunction('gotoHistoryIndex',gotoHistoryIndex,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,'$1$2$4 permaTabs.tempAllowed = true; $5 permaTabs.tempAllowed = false; $7 ');
 
 		permaTabs.utils.patchFunction('BrowserGoHome',BrowserGoHome,'loadOneOrMoreURIs(homePage);','if(permaTabs.isPermaTab(getBrowser().mCurrentTab)){ urls = homePage.split("|"); var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false); gBrowser.loadTabs(urls, loadInBackground); }else{ loadOneOrMoreURIs(homePage); }');
 
@@ -409,7 +410,7 @@ var permaTabs =
 
 	colorPermaTabs : function()
 	{
-		var rule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish') /*&& permaTabs.OS != 'Darwin'*/) ? 'background-color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.color") + ' !important;' : '');
+		var rule = ((permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')) ? 'background-color: ' + permaTabs.prefs.getCharPref("extensions.permatabs.color") + ' !important;' : '');
 
 		try
 		{

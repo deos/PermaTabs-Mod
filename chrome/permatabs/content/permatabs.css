@@ -7,12 +7,12 @@
   display: none !important;
 }
 
-#browser tab.tabbrowser-tab[isPermaTab=true],
-{
-  background-color: #f2f2a9 !important;
-}
-
 #browser tab.tabbrowser-tab[isPermaTab=true] > *
 {
   background-color: transparent !important;
+}
+
+#browser tab.tabbrowser-tab[isPermaTab=true]
+{
+  background-color: #f2f2a9 !important;
 }
