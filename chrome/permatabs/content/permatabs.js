@@ -3,7 +3,7 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.8.5
+// bump to version mod 1.8.5.1
 // contact: deos.hab@freenet.de
 //
 // new feature:
