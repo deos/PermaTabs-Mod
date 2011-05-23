@@ -1,30 +1,45 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://permatabs/content/permatabs.css" type="text/css"?>
+<?xml-stylesheet href="chrome://permatabs/skin/permatabs.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://permatabs/locale/permatabs.dtd">
 
 <overlay id="permatabs-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://permatabs/content/permatabs.js" />
+	<script type="application/x-javascript" src="chrome://permatabs/content/permatabs.js" />
 
-  <menupopup id="menu_ToolsPopup">
-    <menuitem id="permaTabsMenuItemOptions" 
-              label="&options.label;"
-              oncommand="openDialog('chrome://permatabs/content/prefsWindow.xul', 'permaTabsPrefWindow', 'chrome, centerscreen');"
-              insertafter="devToolsSeparator" 
-              accesskey="&options.accesskey;" />
-  </menupopup> 
+	<!-- Toolmenue item -->
+	<menupopup id="menu_ToolsPopup">
+		<menuitem 	id="permaTabsMenuItemOptions"
+					label="&options.label;"
+					oncommand="openDialog('chrome://permatabs/content/prefsWindow.xul', 'permaTabsPrefWindow', 'chrome, centerscreen');"
+					insertafter="devToolsSeparator"
+					accesskey="&options.accesskey;" />
+	</menupopup>
 
-  <stringbundleset id="stringbundleset"> 
-    <stringbundle id="tabBrowserStrings" src="chrome://browser/locale/tabbrowser.properties"/>
-    <stringbundle id="permatabStrings" src="chrome://permatabs/locale/permatabs.properties"/>
-  </stringbundleset>
+	<!-- Stringsets -->
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="tabBrowserStrings" src="chrome://browser/locale/tabbrowser.properties"/>
+		<stringbundle id="permatabStrings" src="chrome://permatabs/locale/permatabs.properties"/>
+	</stringbundleset>
 
-  <window id="main-window">
-    <keyset id="permatabsKeyset">
-      <key id="permaTabAccel" oncommand="permaTabs.togglePermanence(true);" key="p" modifiers="alt"/>
-    </keyset>
-    <keyset id="mainKeyset"><keyset id="permatabsKeyset" /></keyset>
-  </window>
+	<!-- Acesskey -->
+	<window id="main-window">
+		<keyset id="permatabsKeyset">
+			<key id="permaTabAccel" oncommand="permaTabs.togglePermanence(true);" key="p" modifiers="alt"/>
+		</keyset>
+		<keyset id="mainKeyset"><keyset id="permatabsKeyset" /></keyset>
+	</window>
+  
+	<!-- Toolbar button -->
+	<toolbarpalette id="BrowserToolbarPalette">
+		<toolbarbutton 	id="permatabs-togglebutton"
+						class="toolbarbutton-1 chromeclass-toolbar-additional"
+						autoCheck="false"
+						type="checkbox"
+						oncommand="permaTabs.togglePermanence(true);"
+						label="&button.label;"
+						tooltiptext="&button.label;">
+		</toolbarbutton>
+	</toolbarpalette>
 
 </overlay>

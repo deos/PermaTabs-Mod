@@ -95,6 +95,10 @@
 		<checkbox id="permaTabsPrefAskOverwrite"
 				  label="&option.askOverwrite.label;"
 				  pref="extensions.permatabs.askOverwrite" />
+
+		<checkbox id="permaTabsPrefLoadOnStartup"
+				  label="&option.loadOnStartup.label;"
+				  pref="extensions.permatabs.loadonstartup" />
 	</groupbox>
 
 	<command id="cmdPermaTabsPrefDisableFields"

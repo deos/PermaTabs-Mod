@@ -1,3 +1,5 @@
+<!ENTITY button.label "Permanenter Tab">
+
 <!ENTITY options.label "PermaTab Einstellungen">
 <!ENTITY options.accesskey "e">
 
@@ -20,3 +22,4 @@
 <!ENTITY option.miscBox.label "Sonstiges">
 <!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">
 <!ENTITY option.askOverwrite.label "Sicherheitsabfrage vor überschreiben der Startseite eines Permatabs">
+<!ENTITY option.loadOnStartup.label "Seiten der PermaTabs beim Browserstart laden">

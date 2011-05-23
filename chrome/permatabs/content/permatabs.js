@@ -1,13 +1,17 @@
+//######################################################
+// Licence: GPL (http://www.gnu.org/licenses/gpl.html)
+//######################################################
+
 // permatabs : 1.7.0
 // contact   : david@donesmart.com
 // copyright : 2006-2007 donesmart ltd
 
-// modifications by deos in June - November 2008
-// bump to version Mod 1.9.0
+// modifications by deos in June 2008 - April 2009
+// bump to version Mod 1.9.1
 // contact: deos.dev@gmail.com
 //
 // new feature in Mod version:
-// + Added FF 3 and 3.1 support
+// + Added FF 3 and 3.5 support
 // + some bug fixes
 // + Added "Permatab Home" function
 // + Addes "Reload current url" function
@@ -21,10 +25,11 @@
 // + Added possibility to move the faviconize menu item next to the permatab item and to add a seperator between them (only about:config)
 // + Added possibility to activate a special theme for permatabs on mac (and possibility to use additional theme for tabs in background - only about:config)
 // + compatibility fix for dublicateTab [1.0.2]
-// + compatibility fix for throbber function of MR Tech Toolkit [6.0.1 - 6.0.3.1]
-// + compatibility fix for duplicing tabs with Tab Mix Plus [0.3.7pre - 0.3.7.3]
-// + compatibility fix for gmail notifier [0.6.3.8 - 0.6.3.9]
-// + compatibility fix for ColorfulTabs [3.5 - 3.7]
+// + compatibility fix for throbber function of MR Tech Toolkit [6.0.1 - 6.0.3.3]
+// + compatibility fix for duplicating tabs with Tab Mix Plus [0.3.7pre - 0.3.7.3]
+// + compatibility fix for gmail notifier [0.6.3.8 - 0.6.3.11]
+// + compatibility fix for Tabgroups-Plus [0.4.1]
+// + compatibility fix for ColorfulTabs [3.5 - 3.9.1]
 // + compatibility fix for FlagTab [2.1.3]
 // + compatibility fix for ChromaTabs Plus [2.1]
 // + compatibility fix for Aging Tabs [0.7.1]
@@ -261,7 +266,7 @@ var permaTabs =
 
 		this.tabContextMenu.addEventListener("popupshowing", permaTabs.updateContextMenu, false);
 
-		getBrowser().mTabContainer.addEventListener("select", function(e){ permaTabs.onTabSelected(); }, false);
+		getBrowser().mTabContainer.addEventListener("TabSelect", function(e){ permaTabs.onTabSelected(); }, false);
 
 
 		permaTabs.utils.wrapFunction('window.contentAreaClick', window.contentAreaClick, this.patchedContentAreaClick);
@@ -398,6 +403,8 @@ var permaTabs =
 		}
 
 		getBrowser().mTabContainer.setAttribute('disableclose', isPermaTab);
+
+		this.setToolbarButton();
 	},
 
 	updateContextMenu : function(e)
@@ -656,7 +663,7 @@ var permaTabs =
 		{
 			for(var x = 0; x < document.styleSheets.length; x++)
 			{
-				if(document.styleSheets[x].href == 'chrome://permatabs/content/permatabs.css')
+				if(document.styleSheets[x].href == 'chrome://permatabs/skin/permatabs.css')
 				{
 					document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 
@@ -770,6 +777,8 @@ var permaTabs =
 		{ getBrowser().mTabContainer.setAttribute('disableclose', !isPermaTab); }
 
 		permaTabs.savePermaTabs();
+		
+		this.setToolbarButton();
 	},
 
 	goHome : function()
@@ -928,6 +937,14 @@ var permaTabs =
 		catch(e)
 		{}
 	},
+	
+	setToolbarButton : function()
+	{
+	    if(!document.getElementById('permatabs-togglebutton')){ return false; }
+
+		var isPermaTab = (this.getPermaTabLocalIndex(getBrowser().mCurrentTab)>-1 ? true : false);
+		document.getElementById('permatabs-togglebutton').setAttribute('checked', isPermaTab);
+	},
 
 	patchedContentAreaClick : function(event, fieldNormalClicks)
 	{
@@ -1060,6 +1077,7 @@ var permaTabs =
 		var props = permaTabs.getPermaTabById(id);
 		var tabs = getBrowser().mTabContainer.getElementsByAttribute('permaTabId', id);
 		var tab = null;
+		var loadonstartup = this.prefs.getBoolPref('extensions.permatabs.loadonstartup');
 
 		if(!(tabs && (tab = tabs[0])))
 		{
@@ -1075,6 +1093,9 @@ var permaTabs =
 			
 			tab.style.removeProperty('background-color');
 			tab.style.removeProperty('color');
+			
+			if(loadonstartup)
+			{ gBrowser.getBrowserForTab(tab).loadURI(props.url); }
 		}
 
 		if(tab && permaTabs.faviconizeTabInstalled && props.faviconized && !tab.hasAttribute('faviconized'))

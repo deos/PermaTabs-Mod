@@ -15,6 +15,7 @@ pref("extensions.permatabs.macStyle", false);
 
 pref("extensions.permatabs.askUnset", false);
 pref("extensions.permatabs.askOverwrite", false);
+pref("extensions.permatabs.loadonstartup", false);
 
 pref("extensions.permatabs.nextId", 100);
 pref("extensions.permatabs.permatabs.ids", "");

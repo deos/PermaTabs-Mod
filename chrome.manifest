@@ -1,11 +1,16 @@
-content  permatabs  chrome/permatabs/content/
-overlay  chrome://browser/content/browser.xul  chrome://permatabs/content/permatabs.xul
-locale   permatabs  en-US  chrome/permatabs/locale/en-US/
-locale   permatabs  cs-CZ  chrome/permatabs/locale/cs-CZ/
-locale   permatabs  de-DE  chrome/permatabs/locale/de-DE/ 
-locale   permatabs  de-CH  chrome/permatabs/locale/de-CH/
-locale   permatabs  fr-FR  chrome/permatabs/locale/fr-FR/
-locale   permatabs  it-IT  chrome/permatabs/locale/it-IT/
-locale   permatabs  ja-JP  chrome/permatabs/locale/ja-JP/
-locale   permatabs  nl-NL  chrome/permatabs/locale/nl-NL/
-locale   permatabs  zh-CN  chrome/permatabs/locale/zh-CN/
+content		permatabs	chrome/permatabs/content/
+
+overlay		chrome://browser/content/browser.xul  chrome://permatabs/content/permatabs.xul
+
+skin		permatabs	classic/1.0	chrome/permatabs/skin/
+style		chrome://global/content/customizeToolbar.xul	chrome://permatabs/skin/permatabs.css
+
+locale		permatabs	en-US	chrome/permatabs/locale/en-US/
+locale		permatabs	cs-CZ	chrome/permatabs/locale/cs-CZ/
+locale		permatabs	de-DE	chrome/permatabs/locale/de-DE/
+locale		permatabs	de-CH	chrome/permatabs/locale/de-CH/
+locale		permatabs	fr-FR	chrome/permatabs/locale/fr-FR/
+locale		permatabs	it-IT	chrome/permatabs/locale/it-IT/
+locale		permatabs	ja-JP	chrome/permatabs/locale/ja-JP/
+locale		permatabs	nl-NL	chrome/permatabs/locale/nl-NL/
+locale		permatabs	zh-CN	chrome/permatabs/locale/zh-CN/

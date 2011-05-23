@@ -1,3 +1,5 @@
+<!ENTITY button.label "Permanent Tab">
+
 <!ENTITY options.label "PermaTabオプション">
 <!ENTITY options.accesskey "r">
 
@@ -20,3 +22,4 @@
 <!ENTITY option.miscBox.label "Misc.">
 <!ENTITY option.askUnset.label "Ask before removing a PermaTab">
 <!ENTITY option.askOverwrite.label "Ask before overwriting a PermaTab Home">
+<!ENTITY option.loadOnStartup.label "Load PermaTabed pages on startup">
