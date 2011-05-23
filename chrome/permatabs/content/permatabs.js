@@ -3,24 +3,27 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June - August 2008 (or at least i tried to do this)
-// bump to version mod 1.8.4
+// bump to version mod 1.8.5
 // contact: deos.hab@freenet.de
 //
 // new feature:
+// - FF 3 support
+// - some bug fixes
 // - Added "Permatab Home" function
 // - compatibility fix for dublicateTab (duplicate in new window is still buggy)
 // - compatibility fix for MR Tech Toolkit (especially its throbber function)
 // - compatibility fix for duplicing tabs with Tab Mix Plus
+// - compatibility fix for gmail notifier
 //
 // known issues:
-// - sometimes there is no menue-entry for permatabbing <-- appears to be nearly fixed
+// - sometimes there is no menue-entry for permatabbing <-- appears to be nearly fixed, but can still appear when restarting the browser
 // - problems with opening a whole bookmark folder (FF3 bug)
 // - could not fix bug with dubplicateTab's openInNewWindow
 
 
 var permaTabs =
 {
-	version : [1,8,4],
+	version : [1,8,5],
 	prevVersion : false,
 	prerequisites : false,
 	initialized : false,
@@ -31,6 +34,7 @@ var permaTabs =
 	faviconizeTabInstalled : false,
 	duplicateTabInstalled : false,
 	mrTechToolkitInstalled : false,
+	gmailnotifierinstalled : false,
 	delayedStartupCall : false,
 	ssWillRestore : false,
 	ssTabsRestored : 0,
@@ -147,6 +151,7 @@ var permaTabs =
 				else if(extId == 'faviconizetab@espion.just-size.jp' && !disabled){ this.faviconizeTabInstalled = true; }
 				else if(extId == '{61ED2A9A-39EB-4AAF-BD14-06DFBE8880C3}' && !disabled){ this.duplicateTabInstalled = true }
 				else if(extId == '{9669CC8F-B388-42FE-86F4-CB5E7F5A8BDC}' && !disabled){ this.mrTechToolkitInstalled = true; }
+				else if(extId == '{44d0a1b4-9c90-4f86-ac92-8680b5d6549e}' && !disabled){ this.gmailnotifierinstalled = true; }
 			}
 		}
 
@@ -182,6 +187,8 @@ var permaTabs =
 		
 		permaTabs.utils.wrapFunction('window.loadURI', window.loadURI, this.patchedLoadURI);
 		permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
+		
+		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,'return "current";','if(permaTabs.isPermaTab(getBrowser().mCurrentTab)){ return "tab"; }else{ return "current"; }');
 
 		permaTabs.utils.patchFunction('BrowserGoHome',BrowserGoHome,'loadOneOrMoreURIs(homePage);','if(permaTabs.isPermaTab(getBrowser().mCurrentTab)){ urls = homePage.split("|"); var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false); gBrowser.loadTabs(urls, loadInBackground); }else{ loadOneOrMoreURIs(homePage); }');
 
@@ -244,6 +251,14 @@ var permaTabs =
 		{
 		    if(this.mrTechToolkitInstalled && typeof local_common.openURL == "function")
 		    { permaTabs.utils.patchFunction('local_common.openURL',local_common.openURL," if (myWindowContent == \"about:blank\") {", "if (permaTabs.isPermaTab(gBrowser.mCurrentTab)){ forceTab = true; } else if (myWindowContent == 'about:blank') {"); }
+		}
+		catch(e){}
+		
+		//gmail notifier
+		try
+		{
+		    if(this.gmailnotifierinstalled && typeof gm_notifier.prototype.loadWebmail == "function")
+		    { permaTabs.utils.patchFunction('gm_notifier.prototype.loadWebmail',gm_notifier.prototype.loadWebmail,'if (getBrowser().mCurrentBrowser.currentURI.spec == "about:blank")', 'if (permaTabs.isPermaTab(gBrowser.mCurrentTab) && location==0){ location = 1; } if (getBrowser().mCurrentBrowser.currentURI.spec == "about:blank" && !permaTabs.isPermaTab(gBrowser.mCurrentTab))'); }
 		}
 		catch(e){}
 	},

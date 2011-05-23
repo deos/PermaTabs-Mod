@@ -7,12 +7,12 @@
   display: none !important;
 }
 
-.tabbrowser-tab[isPermaTab=true]
+#browser tab.tabbrowser-tab[isPermaTab=true]
 {
   background-color: #f2f2a9 !important;
 }
 
-.tabbrowser-tab[isPermaTab=true] > *
+#browser tab.tabbrowser-tab[isPermaTab=true] > *
 {
   background-color: transparent !important;
 }
