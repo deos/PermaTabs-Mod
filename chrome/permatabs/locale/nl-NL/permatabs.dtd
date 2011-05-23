@@ -1,0 +1,5 @@
+<!ENTITY options.label "PermaTab Opties">
+<!ENTITY options.accesskey "r">
+<!ENTITY option.forceNewTab.label "Verwijzingen in Permatabs moeten altijd in een nieuw tabblad openen">
+<!ENTITY option.forceNewTabDomain.label "Verwijzingen naar hetzelfde domein van bovenstaande regel uitsluiten">
+<!ENTITY option.color.label "PermaTab kleur">

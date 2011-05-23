@@ -1,0 +1,5 @@
+<!ENTITY options.label "Možnosti">
+<!ENTITY options.accesskey "M">
+<!ENTITY option.forceNewTab.label "Vždy otevírat odkazy uvnitř trvalého panelu v novém panelu">
+<!ENTITY option.forceNewTabDomain.label "Výjimka pro odkazy do téže domény">
+<!ENTITY option.color.label "Barva">

@@ -1,0 +1,5 @@
+<!ENTITY options.label "Options de PermaTab">
+<!ENTITY options.accesskey "P">
+<!ENTITY option.forceNewTab.label "Forcer les liens contenus dans les onglets permanents à toujours s&apos;ouvrir dans un nouvel onglet">
+<!ENTITY option.forceNewTabDomain.label "Exclure les liens d&apos;un même domaine de la règle ci-dessus">
+<!ENTITY option.color.label "Couleur des onglets permanents">

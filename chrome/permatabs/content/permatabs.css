@@ -1,0 +1,18 @@
+@import url("chrome://global/skin/");
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+.tabbrowser-tab[isPermaTab=true] .tabs-closebutton,
+.tabbrowser-tab[isPermaTab=true] .tab-close-button
+{
+  display: none !important;
+}
+
+.tabbrowser-tab[isPermaTab=true]
+{
+  background-color: #f2f2a9 !important;
+}
+
+.tabbrowser-tab[isPermaTab=true] > *
+{
+  background-color: transparent !important;
+}

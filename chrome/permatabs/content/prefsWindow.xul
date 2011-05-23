@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://permatabs/locale/permatabs.dtd">
+
+<dialog id="permaTabsPrefWindow" 
+        title="&options.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept,cancel"
+        ondialogaccept="prefsWindow.save();"
+        onload="prefsWindow.sync();" >
+  <script type="application/x-javascript" src="chrome://permatabs/content/prefsWindow.js" />
+
+  <checkbox id="permaTabsPrefForceNewTabs" 
+            label="&option.forceNewTab.label;" 
+            pref="extensions.permatabs.forceNewTabs" 
+            command="cmdPermaTabsPrefForceNewTabs" />
+
+  <checkbox id="permaTabsPrefForceNewTabsDomain" 
+            label="&option.forceNewTabDomain.label;" 
+            pref="extensions.permatabs.forceNewTabsDomain"
+            class="indent" />
+
+  <command id="cmdPermaTabsPrefForceNewTabs" 
+           oncommand="document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !document.getElementById('permaTabsPrefForceNewTabs').getAttribute('checked'));" />
+
+  <checkbox id="permaTabsPrefDistinguish" 
+            label="&option.color.label;" 
+            pref="extensions.permatabs.distinguish" 
+            command="cmdPermaTabsPrefDistinguish" />
+  <box>
+    <colorpicker id="permaTabsPrefColor" type="button" pref="extensions.permatabs.color" class="indent" />
+  </box>
+
+  <command id="cmdPermaTabsPrefDistinguish" 
+           oncommand="document.getElementById('permaTabsPrefColor').setAttribute('disabled', !document.getElementById('permaTabsPrefDistinguish').getAttribute('checked'));" />
+    
+</dialog>

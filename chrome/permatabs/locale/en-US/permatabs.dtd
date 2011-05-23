@@ -1,0 +1,5 @@
+<!ENTITY options.label "PermaTab Options">
+<!ENTITY options.accesskey "r">
+<!ENTITY option.forceNewTab.label "Force links inside permatabs to always open in a new tab">
+<!ENTITY option.forceNewTabDomain.label "Exclude links to same domain from above rule">
+<!ENTITY option.color.label "PermaTab color">

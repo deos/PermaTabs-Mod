@@ -1,0 +1,5 @@
+<!ENTITY options.label "Opzioni di PermaTabs">
+<!ENTITY options.accesskey "r">
+<!ENTITY option.forceNewTab.label "Forza i link contenuti in PermaTabs ad aprirsi sempre in una nuova scheda">
+<!ENTITY option.forceNewTabDomain.label "Escludere i collegamenti allo stesso dominio dalla suddetta regola">
+<!ENTITY option.color.label "Seleziona colore scheda permanente">

@@ -1,0 +1,5 @@
+<!ENTITY options.label "永久标签选项">
+<!ENTITY options.accesskey "r">
+<!ENTITY option.forceNewTab.label "强制永久标签中的链接始终在新标签中打开">
+<!ENTITY option.forceNewTabDomain.label "上一条规则中排除相同域名的链接">
+<!ENTITY option.color.label "永久标签颜色">

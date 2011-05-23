@@ -1,0 +1,5 @@
+<!ENTITY options.label "PermaTabオプション">
+<!ENTITY options.accesskey "r">
+<!ENTITY option.forceNewTab.label "常に新しいタブでpermatabs中のリンクを開く">
+<!ENTITY option.forceNewTabDomain.label "同じドメインへのリンクは除外する">
+<!ENTITY option.color.label "PermaTabの色">

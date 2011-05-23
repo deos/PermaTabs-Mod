@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+
+    <em:name>PermaTabs Mod</em:name>
+    <em:id>{20291fcc-1471-46c8-8213-0911f5ce6d66}</em:id>
+    <em:version>1.7.0</em:version>
+    <em:description>Create non-closable tabs that stick around between sessions - modified to work in Firefox 3</em:description>
+    <em:creator>Done Smart Ltd - Mod for FF3 by deos</em:creator>
+    <em:homepageURL>http://www.donesmart.com/</em:homepageURL>
+    <em:optionsURL>chrome://permatabs/content/prefsWindow.xul</em:optionsURL>
+
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>3.0</em:minVersion>
+        <em:maxVersion>3.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication> 
+
+  </Description>
+
+</RDF>
