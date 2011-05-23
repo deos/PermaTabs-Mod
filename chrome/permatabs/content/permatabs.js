@@ -1,17 +1,35 @@
-//######################################################
-// Licence: GPL (http://www.gnu.org/licenses/gpl.html)
-//######################################################
+/*
+PermaTabs Mod
+Turn Firefox tabs of your choice into permanent tabs. PermaTabs can't be closed accidentally
+no matter what you click (even actions like "Close other tabs" will not affect them) and
+will stick around between sessions.
 
+Copyright (C) 2009 deos
+
+This program is free software; you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation; either version 3 of
+the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program;
+if not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+//
 // permatabs : 1.7.0
 // contact   : david@donesmart.com
 // copyright : 2006-2007 donesmart ltd
 
-// modifications by deos in June 2008 - April 2009
-// bump to version Mod 1.9.1
+// modifications by deos in June 2008 - June 2009
+// bump to version Mod 1.9.2
 // contact: deos.dev@gmail.com
 //
 // new feature in Mod version:
-// + Added FF 3 and 3.5 support
+// + Added FF 3 and 3.1/3.5 support
 // + some bug fixes
 // + Added "Permatab Home" function
 // + Addes "Reload current url" function
@@ -29,7 +47,7 @@
 // + compatibility fix for duplicating tabs with Tab Mix Plus [0.3.7pre - 0.3.7.3]
 // + compatibility fix for gmail notifier [0.6.3.8 - 0.6.3.11]
 // + compatibility fix for Tabgroups-Plus [0.4.1]
-// + compatibility fix for ColorfulTabs [3.5 - 3.9.1]
+// + compatibility fix for ColorfulTabs [3.5 - 3.9.2]
 // + compatibility fix for FlagTab [2.1.3]
 // + compatibility fix for ChromaTabs Plus [2.1]
 // + compatibility fix for Aging Tabs [0.7.1]
@@ -156,10 +174,18 @@ var permaTabs =
 			ss.persistTabAttribute('permaTabUrl');
 			
 			
-			permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')){ return $base(); } });
+			try
+			{
+				if(window.setColor && typeof window.setColor == "function")
+				{
+					permaTabs.utils.wrapFunction('window.setColor', window.setColor, function(tab, tabClr){if(!permaTabs.isPermaTab(tab) || !permaTabs.prefs.getBoolPref('extensions.permatabs.distinguish')){ return $base(); } });
+				}
+			}
+			catch(e){}
 
-			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'var l = this.mTabContainer.childNodes.length;', 'if(aTab.hasAttribute("isPermaTab")){ return; } var l = this.mTabContainer.childNodes.length;');   																			//FF 3.0
-			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'this._endRemoveTab(this._beginRemoveTab(aTab, true));', 'if(aTab.localName!="tab"){ aTab = this.mCurrentTab; } if(aTab.hasAttribute("isPermaTab")){ return; } this._endRemoveTab(this._beginRemoveTab(aTab, true));'); 		//FF 3.1B1
+
+			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'var l = this.mTabContainer.childNodes.length;', 'if(aTab.hasAttribute("isPermaTab")){ return; } var l = this.mTabContainer.childNodes.length;');   																									//FF 3.0
+			permaTabs.utils.patchFunction('getBrowser().removeTab', getBrowser().removeTab, 'this._endRemoveTab(this._beginRemoveTab(aTab, false, null, true));', 'if(aTab.localName!="tab"){ aTab = this.mCurrentTab; } if(aTab.hasAttribute("isPermaTab")){ return; } this._endRemoveTab(this._beginRemoveTab(aTab, false, null, true));'); 		//FF 3.5
 
 			permaTabs.utils.patchFunction('getBrowser().warnAboutClosingTabs', getBrowser().warnAboutClosingTabs, 'var numTabs = this.mTabContainer.childNodes.length;', 'var numTabs = this.mTabContainer.childNodes.length - permaTabs.permaTabs.length; if(!aAll && getBrowser().mContextTab && permaTabs.isPermaTab(getBrowser().mContextTab)) numTabs++;');
 
@@ -207,7 +233,7 @@ var permaTabs =
 		try
 		{
 			if(this.tabMixInstalled && !window.__contentAreaClick && (typeof TMP_miniT_init == "function"))
-			{ return permaTabs.utils.wrapFunction('window.TMP_miniT_init', TMP_miniT_init, function(){ if(typeof tablib == "undefined") return null; var ret = $base(); permaTabs.init(); return ret;}); }
+			{ return permaTabs.utils.wrapFunction('window.TMP_miniT_init', TMP_miniT_init, function(){ if(typeof tablib == "undefined"){ return null; } var ret = $base(); permaTabs.init(); return ret;}); }
 		}
 		catch(e){}
 
@@ -273,9 +299,19 @@ var permaTabs =
 
 		permaTabs.utils.wrapFunction('window.loadURI', window.loadURI, this.patchedLoadURI);
 		permaTabs.utils.wrapFunction('gBrowser.loadURI', gBrowser.loadURI, this.patchedGBrowserLoadURI);
-		permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
 
-		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,'return "current";','if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed){ return "tab"; }else{ return "current"; }');
+        //FF 3.0 only
+		try
+		{
+		    if(window.BrowserLoadURL && typeof window.BrowserLoadURL == "function")
+		    {
+
+				permaTabs.utils.wrapFunction('window.BrowserLoadURL', window.BrowserLoadURL, this.patchedBrowserLoadURL);
+			}
+		}
+		catch(e){}
+
+		permaTabs.utils.patchFunction('whereToOpenLink',whereToOpenLink,/("current")/g,'((permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed) ? "tab" : "current")');
 
 		permaTabs.utils.wrapFunction('BrowserBack', BrowserBack, function(aEvent){ permaTabs.tempAllowed = true; var returnvalue = $base(); permaTabs.tempAllowed = false; return returnvalue; });
 		permaTabs.utils.wrapFunction('BrowserForward', BrowserForward, function(aEvent){ permaTabs.tempAllowed = true; var returnvalue = $base(); permaTabs.tempAllowed = false; return returnvalue; });
@@ -289,13 +325,13 @@ var permaTabs =
 		}
 		catch(e)
 		{
-		    //FF 3.1
+		    //FF 3.5
 			permaTabs.utils.patchFunction('gURLBar.handleCommand',gURLBar.handleCommand,/(function)((.|\n)*?)([{])((.|\n)*)([}])/,"$1$2$4 permaTabs.tempAllowSameUrlDomain(); $5 permaTabs.tempAllowed = false; $7 ");
 			permaTabs.utils.patchFunction('gURLBar.handleCommand',gURLBar.handleCommand,/(return)(.*?)([;])/g,"permaTabs.tempAllowed = false; $1$2$3 ");
 		}
 
 		var ver = false;
-		if(((isset = this.prefs.getPrefType("extensions.permatabs.version")) != this.prefs.PREF_STRING) || ((ver = this.prefs.getCharPref("extensions.permatabs.version")) != this.version.join('.')))
+		if((this.prefs.getPrefType("extensions.permatabs.version")!=this.prefs.PREF_STRING) || (ver = this.prefs.getCharPref("extensions.permatabs.version")!=this.version.join('.')))
 		{
 			if(!this.firstInstall)
 			{ this.prevVersion = (ver ? ver.split('.') : [1,2,0]); }
@@ -364,6 +400,8 @@ var permaTabs =
 			{ permaTabs.utils.patchFunction('agingTabs.step',agingTabs.step,'let tab = tabs[i];', 'let tab = tabs[i]; if(permaTabs.isPermaTab(tab)){ continue; } '); }
 		}
 		catch(e){}
+		
+		return true;
 	},
 
 	deinit : function()
@@ -730,11 +768,17 @@ var permaTabs =
 																'image'			: currentTab.getAttribute('image'),
 																'faviconized'	: faviconized							};
 
-			if(typeof window.setColor == "function")
+			try
 			{
-				for(var i = 0 ; i < document.getAnonymousNodes(currentTab).length; i++)
-				{ document.getAnonymousNodes(currentTab)[i].style.setProperty("background-color", '' ,''); }
+				if(typeof window.setColor == "function")
+				{
+				    //FF 3
+					for(var i = 0 ; i < document.getAnonymousNodes(currentTab).length; i++)
+					{ document.getAnonymousNodes(currentTab)[i].style.setProperty("background-color", '' ,''); }
+				}
 			}
+			catch(e)
+			{}
 		}
 		else
 		{
@@ -792,6 +836,8 @@ var permaTabs =
 		permaTabs.tempAllowed = true;
 		getBrowser().mCurrentBrowser.loadURI(url);
 		permaTabs.tempAllowed = false;
+		
+		return true;
 	},
 	
 	setHome : function()
@@ -811,6 +857,8 @@ var permaTabs =
 		permatabdata['image'] = currentTab.getAttribute('image');
 
 		permaTabs.savePermaTabs();
+		
+		return true;
 	},
 
 	reloadCurrentUrl : function()
@@ -824,6 +872,8 @@ var permaTabs =
 		permaTabs.tempAllowed = true;
 		getBrowser().mCurrentBrowser.loadURI(url);
 		permaTabs.tempAllowed = false;
+		
+		return true;
 	},
 
 	tempAllowSameUrlDomain : function()
@@ -944,6 +994,8 @@ var permaTabs =
 
 		var isPermaTab = (this.getPermaTabLocalIndex(getBrowser().mCurrentTab)>-1 ? true : false);
 		document.getElementById('permatabs-togglebutton').setAttribute('checked', isPermaTab);
+		
+		return true;
 	},
 
 	patchedContentAreaClick : function(event, fieldNormalClicks)
@@ -978,7 +1030,7 @@ var permaTabs =
 		if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && !permaTabs.tempAllowed)
 		{
 			if(aTriggeringEvent instanceof MouseEvent && aTriggeringEvent.button == 2)
-			return;
+			return false;
 
 			var url = gURLBar.value;
 
@@ -994,6 +1046,8 @@ var permaTabs =
 			{ gBrowser.loadOneTab(url, null, null, aPostData, false, true); }
 
 			content.focus();
+			
+			return true;
 		}
 		else
 		{
@@ -1011,7 +1065,7 @@ var permaTabs =
 		else
 		{ permaTabs.tempAllowed = false; }
 		
-		$base();
+		return $base();
 	},
 
 	patchedGBrowserLoadURI : function(aURI, aReferrerURI, aCharset)
@@ -1021,7 +1075,7 @@ var permaTabs =
 		else
 		{ permaTabs.tempAllowed = false; }
 
-		$base();
+		return $base();
 	},
 	
 	patchedFaviconizeToogle : function(tab)
@@ -1126,15 +1180,18 @@ var permaTabs =
 		wrapFunction : function(name, orig, wrapper)
 		{
 			if(permaTabs.utils.wrappedFunctions[name])
-			{ return; }
+			{ return false; }
 
 			permaTabs.utils.wrappedFunctions[name] = orig;
 			eval(name + ' = ' + wrapper.toString().replace('$base()', 'permaTabs.utils.wrappedFunctions["' + name + '"].apply(this, arguments);'));
+			
+			return true;
 		},
 
 		patchFunction : function(name, func, search, replace)
 		{
 			eval(name + ' = ' + func.toString().replace(search, replace));
+			return true;
 		}
 	}
 }

@@ -1,30 +1,48 @@
 <?xml version="1.0"?>
 
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-  <Description about="urn:mozilla:install-manifest">
+	<Description about="urn:mozilla:install-manifest">
 
-    <em:id>{20291fcc-1471-46c8-8213-0911f5ce6d66}</em:id>
+		<em:id>{20291fcc-1471-46c8-8213-0911f5ce6d66}</em:id>
+		<em:version>1.9.2</em:version>
 
-    <em:name>PermaTabs Mod</em:name>
-    <em:version>1.9.1</em:version>
-    <em:description>Create non-closable tabs that stick around between sessions - modified version for Firefox 3</em:description>
 
-    <em:creator>Done Smart Ltd</em:creator>
-	<em:developer>Modifications by deos (deos.dev@gmail.com)</em:developer>
+		<em:localized>
+			<Description>
+				<em:locale>de-DE</em:locale>
 
-    <em:homepageURL>http://addons.mozilla.org/firefox/addon/7816</em:homepageURL>
-    <em:optionsURL>chrome://permatabs/content/prefsWindow.xul</em:optionsURL>
+				<em:name>PermaTabs Mod</em:name>
+				<em:description>Tabs können permanent gesetzt werden, wodurch sie nicht geschlossen werden können und auch nach einem Neustart des Browsers weiterhin vorhanden sind</em:description>
 
-    <em:targetApplication>
-      <Description>
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>3.0</em:minVersion>
-        <em:maxVersion>3.5b4pre</em:maxVersion>
-      </Description>
-    </em:targetApplication> 
+				<em:creator>deos (deos.dev@gmail.com)</em:creator>
+				<em:developer>Originalcode von Done Smart Ltd (www.donesmart.com)</em:developer>
 
-  </Description>
+				<em:homepageURL>https://addons.mozilla.org/firefox/addon/7816</em:homepageURL>
+			</Description>
+		</em:localized>
+
+
+		<em:name>PermaTabs Mod</em:name>
+		<em:description>Create non-closable tabs that stick around between sessions</em:description>
+
+		<em:creator>deos (deos.dev@gmail.com)</em:creator>
+		<em:developer>Originalcode by Done Smart Ltd (www.donesmart.com)</em:developer>
+
+		<em:homepageURL>https://addons.mozilla.org/firefox/addon/7816</em:homepageURL>
+
+
+		<em:optionsURL>chrome://permatabs/content/prefsWindow.xul</em:optionsURL>
+
+		<em:targetApplication>
+			<Description>
+				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+				<em:minVersion>3.0</em:minVersion>
+				<em:maxVersion>3.5.*</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+
+	</Description>
 
 </RDF>
