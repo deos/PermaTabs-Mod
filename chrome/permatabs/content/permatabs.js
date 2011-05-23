@@ -3,14 +3,14 @@
 // copyright : 2006-2007 donesmart ltd
 
 // modified to work in Firefox 3 by deos in June 2008 (or at least tried to do this)
-// bump to version 1.8.1
+// bump to version 1.8.2
 // new feature: Added "Permatab Home" function
 // known issues: sometimes there is no menue-entry for permatabbing, problems with opening a whole bookmark folder
 // contact: deos.hab@freenet.de
 
 var permaTabs =
 {
-  version : [1,7,0],
+  version : [1,8,2],
   prevVersion : false,
   prerequisites : false,
   initialized : false,
@@ -141,7 +141,7 @@ var permaTabs =
       }
     }
 
-    if(this.tabMixInstalled && !window.__contentAreaClick)
+    if(this.tabMixInstalled && !window.__contentAreaClick && TMP_miniT_init!==undefined)
       return permaTabs.utils.wrapFunction('window.TMP_miniT_init', TMP_miniT_init, function(){ if(typeof tablib == "undefined") return null; var ret = $base(); permaTabs.init(); return ret;});
 
     if(this.faviconizeTabInstalled && !document.getElementById('tabContextFaviconizeTab'))
