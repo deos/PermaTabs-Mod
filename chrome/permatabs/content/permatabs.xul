@@ -11,11 +11,10 @@
 	<menupopup id="menu_ToolsPopup">
 		<menuitem 	id="permaTabsMenuItemOptions"
 					label="&options.label;"
-					oncommand="openDialog('chrome://permatabs/content/prefsWindow.xul', 'permaTabsPrefWindow', 'chrome, centerscreen');"
-					insertafter="devToolsSeparator"
-					accesskey="&options.accesskey;" />
+					oncommand="permaTabs.OptionWindow();"
+					insertafter="devToolsSeparator" />
 	</menupopup>
-
+	
 	<!-- Stringsets -->
 	<stringbundleset id="stringbundleset">
 		<stringbundle id="tabBrowserStrings" src="chrome://browser/locale/tabbrowser.properties"/>
@@ -25,7 +24,8 @@
 	<!-- Acesskey -->
 	<window id="main-window">
 		<keyset id="permatabsKeyset">
-			<key id="permaTabAccel" oncommand="permaTabs.togglePermanence(true);" key="p" modifiers="alt"/>
+			<key id="permaTabToggleKey" oncommand="permaTabs.togglePermanence(true);" key="p" modifiers="alt"/>
+			<key id="permaTabHomeKey" oncommand="permaTabs.goHome(true);" key="o" modifiers="alt"/>
 		</keyset>
 		<keyset id="mainKeyset"><keyset id="permatabsKeyset" /></keyset>
 	</window>
@@ -36,7 +36,7 @@
 						class="toolbarbutton-1 chromeclass-toolbar-additional"
 						autoCheck="false"
 						type="checkbox"
-						oncommand="permaTabs.togglePermanence(true);"
+						oncommand="if(event.target==this){ permaTabs.togglePermanence(true); }"
 						label="&button.label;"
 						tooltiptext="&button.label;">
 		</toolbarbutton>

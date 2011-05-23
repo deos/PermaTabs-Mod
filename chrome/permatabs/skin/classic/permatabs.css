@@ -13,6 +13,59 @@ toolbar[iconsize="small"] #permatabs-togglebutton
 	list-style-image: url(images/toolbarbutton_s.png);
 }
 
+#permatabs-togglebutton[disabled=true]
+{
+	list-style-image: url(images/toolbarbutton_d.png);
+}
+toolbar[iconsize="small"] #permatabs-togglebutton[disabled=true]
+{
+	list-style-image: url(images/toolbarbutton_s_d.png);
+}
+
+#permatabs-togglebutton[type="menu-button"][checked=true]
+{
+	padding: 0px !important;
+}
+
+
+/* Prefwindow-panels */
+
+#permaTabsPrefWindow radio[pane]
+{
+	list-style-image: url(chrome://browser/skin/preferences/Options.png);
+}
+
+#permaTabsPrefWindow radio[pane="permaTabPrefMainPane"]
+{
+	-moz-image-region: rect(0px, 32px, 32px, 0px);
+}
+
+#permaTabsPrefWindow radio[pane="permaTabPrefAdvancedPane"]
+{
+	-moz-image-region: rect(0px, 224px, 32px, 192px);
+}
+
+#permaTabsPrefWindow radio[pane="permaTabPrefShortcutsPane"]
+{
+	list-style-image: url(images/shortcuts.png);
+	-moz-image-region: rect(0px, 32px, 32px, 0px);
+}
+
+
+/* Prefwindow misc */
+
+#permaTabPrefInfo
+{
+	margin-top: 5px;
+ 	font-style: italic;
+}
+
+.colorpicker
+{
+	margin-left: 10px;
+	margin-right: 0px;
+}
+
 
 /* Main */
 

@@ -1,67 +1,26 @@
 function PrefsWindow()
 {
-	this.sync = function()
+	this.onLoad = function()
 	{
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-		var prefWindow = document.getElementById('permaTabsPrefWindow');
-		var elms = prefWindow.getElementsByAttribute("pref", "*");
+		this.transparency('permaTabsPrefColor');
+		this.transparency('permaTabsPrefLabelColor');
 
-		for(var i = 0; i < elms.length; i++)
-		{
-			switch(elms[i].localName)
-			{
-				case 'checkbox':
-					elms[i].setAttribute('checked', prefs.getBoolPref(elms[i].getAttribute('pref')));
-					break;
-
-				case 'colorpicker':
-					elms[i].setAttribute('color', prefs.getCharPref(elms[i].getAttribute('pref')));
-					elms[i].color = prefs.getCharPref(elms[i].getAttribute('pref'));
-					break;
-
-				case 'radio':
-					elms[i].parentNode.setAttribute('selectedItem', elms[i]);
-					break;
-			}
-		}
-		
 		this.disablefields();
 	};
 
-	this.save = function()
+	this.onSave = function()
 	{
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-		var prefWindow = document.getElementById('permaTabsPrefWindow');
-		var elms = prefWindow.getElementsByAttribute("pref", "*");
-
-		for(var i = 0; i < elms.length; i++)
-		{
-			switch(elms[i].localName)
-			{
-				case 'checkbox':
-					var checked = elms[i].hasAttribute('checked') && elms[i].getAttribute('checked') == 'true';
-					prefs.setBoolPref(elms[i].getAttribute('pref'), checked);
-					break;
-
-				case 'colorpicker':
-					prefs.setCharPref(elms[i].getAttribute('pref'), elms[i].getAttribute('color'));
-					break;
-
-				case 'radio':
-					var checked = elms[i].hasAttribute('selected') && elms[i].getAttribute('selected') == 'true';
-					prefs.setBoolPref(elms[i].getAttribute('pref'), checked);
-					break;
-			}
-		}
-
 		var wm = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
 		var en = wm.getEnumerator("");
 		
-		while (en.hasMoreElements())
+		while(en.hasMoreElements())
 		{
 			var w = en.getNext();
 			if(w.permaTabs && w.permaTabs.initialized)
-			w.permaTabs.colorPermaTabs();
+			{
+				w.permaTabs.colorPermaTabs();
+				w.permaTabs.setToolbarButtonType();
+			}
 		}
 	};
 	
@@ -73,7 +32,9 @@ function PrefsWindow()
 					 "SubMenu" 					: "permaTabsPrefSubMenu",
 					 "Distinguish" 				: "permaTabsPrefDistinguish",
 					 "LabelSet"					: "permaTabsPrefLabelSet",
-					 "MacStyle"					: "permaTabsPrefMacStyle" };
+					 "MacStyle"					: "permaTabsPrefMacStyle",
+					 "ToggleKey"				: "permaTabsPrefToggleKeyActive",
+					 "HomeKey"					: "permaTabsPrefHomeKeyActive" };
 
 		for(i in pref)
 		{
@@ -83,16 +44,61 @@ function PrefsWindow()
 
 		document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !pref['ForceNewTabs']);
 		document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (pref['ForceNewTabs'] && !pref['ForceNewTabsDomain']));
+		document.getElementById('permaTabsPrefAllowSubDomains').setAttribute('disabled', !(pref['ForceNewTabs'] && pref['ForceNewTabsDomain']));
 		
-		document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', pref['HideAdditionalMenuItems']);
-		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (pref['HideAdditionalMenuItems'] || !pref['SubMenu']));
-
 		document.getElementById('permaTabsPrefColor').setAttribute('disabled', !pref['Distinguish']);
+		document.getElementById('permaTabsPrefColorTransparent').setAttribute('disabled', !pref['Distinguish']);
 		document.getElementById('permaTabsPrefLabelColor').setAttribute('disabled', !pref['LabelSet']);
+		document.getElementById('permaTabsPrefLabelColorTransparent').setAttribute('disabled', !pref['LabelSet']);
 
 		document.getElementById('permaTabsPrefForceColor').setAttribute('disabled', pref['MacStyle']);
 		if(pref['MacStyle'])
 		{ document.getElementById('permaTabsPrefForceColor').setAttribute('checked', true); }
+		
+		document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', pref['HideAdditionalMenuItems']);
+		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (pref['HideAdditionalMenuItems'] || !pref['SubMenu']));
+		document.getElementById('permaTabsPrefAskOverwrite').setAttribute('disabled', pref['HideAdditionalMenuItems']);
+
+		document.getElementById('permaTabsPrefToggleKeyModificator').setAttribute('disabled', !pref['ToggleKey']);
+		document.getElementById('PermaTabsPrefToggleKey').setAttribute('disabled', !pref['ToggleKey']);
+
+		document.getElementById('permaTabsPrefHomeKeyModificator').setAttribute('disabled', !pref['HomeKey']);
+		document.getElementById('PermaTabsPrefHomeKey').setAttribute('disabled', !pref['HomeKey']);
 	};
+	
+	this.transparency = function(id, toggle)
+	{
+     	var colorpicker = document.getElementById(id);
+     	var button = document.getElementById(id+'Transparent');
+     	
+		if(toggle)
+		{
+			document.getElementById(colorpicker.getAttribute("preference"))._setValue('transparent');
+			colorpicker.color = 'transparent';
+
+			if(document.getElementById(colorpicker.getAttribute("preference")).instantApply)
+			{
+				//linux!!
+			}
+		}
+
+		button.setAttribute('checked', (colorpicker.getAttribute('color')=="transparent"));
+	};
+	
+	this.closeAllPermaTabs = function()
+	{
+		var wm = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
+		var en = wm.getEnumerator("");
+
+		while(en.hasMoreElements())
+		{
+			var w = en.getNext();
+			if(w.permaTabs && w.permaTabs.initialized)
+			{
+				w.permaTabs.closeAllPermaTabs(false, window);
+			}
+		}
+	}
 }
+
 this.prefsWindow = new PrefsWindow;

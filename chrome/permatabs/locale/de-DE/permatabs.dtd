@@ -1,25 +1,45 @@
 <!ENTITY button.label "Permanenter Tab">
 
 <!ENTITY options.label "PermaTab Einstellungen">
-<!ENTITY options.accesskey "e">
+
+
+<!ENTITY options.mainPane.label "Allgemein">
 
 <!ENTITY option.ruleBox.label "Regeln">
 <!ENTITY option.forceNewTab.label "Links in Permatabs immer in einem neuem Tab öffnen">
 <!ENTITY option.forceNewTabDomain.label "Links innerhalb der selben Domain von der oberen Regel ausschließen">
 <!ENTITY option.AllowUrlbarDomain.label "Eingaben in die Adressleiste innerhalb derselben Domain nicht in neuem Tab öffnen">
+<!ENTITY option.allowSubDomains.label "Subdomains ignorieren">
+
+<!ENTITY option.designBox.label "Aussehen">
+<!ENTITY option.color.label "Farbe der permanenten Tabs">
+<!ENTITY option.labelColor.label "Farbe der Beschriftung der permanenten Tabs">
+<!ENTITY option.transparent.label "Transparent">
+<!ENTITY option.useCloseButtonImage.label "PermaTabs mit einem Symbol markieren">
+<!ENTITY option.removeBackground.label "Hintergrund bei permanenten Tabs entfernen">
+<!ENTITY option.macStyle.label "Aussehensanpassung für Mac-Themes zulassen">
+
+
+<!ENTITY options.advancedPane.label "Erweitert">
 
 <!ENTITY option.menuBox.label "Kontextmenü">
 <!ENTITY option.hideAdditionalMenuItems.label "Zusätzliche Kontextmenüeinträge ausblenden">
 <!ENTITY option.subMenu.label "Menüpunkte in einem Untermenü zusammenfassen">
 <!ENTITY option.subMenuExclude.label "Den PermaTabs Schalter davon ausnehmen">
 
-<!ENTITY option.designBox.label "Aussehen">
-<!ENTITY option.color.label "Farbe der permanenten Tabs">
-<!ENTITY option.labelColor.label "Farbe der Beschriftung der permanenten Tabs">
-<!ENTITY option.removeBackground.label "Hintergrund bei permanenten Tabs entfernen">
-<!ENTITY option.macStyle.label "Aussehensanpassung für Mac-Themes zulassen">
-
 <!ENTITY option.miscBox.label "Sonstiges">
+<!ENTITY option.loadOnStartup.label "Seiten der PermaTabs beim Browserstart laden">
 <!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">
 <!ENTITY option.askOverwrite.label "Sicherheitsabfrage vor überschreiben der Startseite eines Permatabs">
-<!ENTITY option.loadOnStartup.label "Seiten der PermaTabs beim Browserstart laden">
+
+<!ENTITY option.closeBox.label "PermaTabs entfernen">
+<!ENTITY option.closeAllPermaTabs.label "Alle offenen PermaTabs entfernen">
+
+
+<!ENTITY options.shortcutsPane.label "Tastenkürzel">
+
+<!ENTITY option.keyBox.label "Tastenkürzel">
+<!ENTITY option.toggleKey.label "Permanenter Tab">
+<!ENTITY option.homeKey.label "Zur Startseite des PermaTab springen">
+<!ENTITY option.restartInfo.label "Änderung erfordert Neustart des Browsers">
+<!ENTITY option.ctrl.label "Strg">
