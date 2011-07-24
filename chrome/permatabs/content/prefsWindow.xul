@@ -16,31 +16,25 @@
 	<prefpane id='permaTabPrefMainPane' label='&options.mainPane.label;'>
 
         <preferences>
-			<preference id='forceNewTabsPref'			name='extensions.permatabs.forceNewTabs'			type='bool'	onchange='prefsWindow.disablefields();'/>
-			<preference id='forceNewTabsDomainPref'		name='extensions.permatabs.forceNewTabsDomain'		type='bool'	onchange='prefsWindow.disablefields();'/>
-			<preference id='allowUrlbarDomainPref'		name='extensions.permatabs.allowUrlbarDomain'		type='bool'/>
-			<preference id='allowSubDomainsPref'		name='extensions.permatabs.allowSubDomains'			type='bool'/>
+			<preference id='unsetActionPref'			name='extensions.permatabs.unsetAction'				type='int'/>
 
 			<preference id='distinguishPref'			name='extensions.permatabs.distinguish'				type='bool'	onchange='prefsWindow.disablefields();'/>
 			<preference id='colorPref'					name='extensions.permatabs.color'					type='string' onchange='prefsWindow.transparency("permaTabsPrefColor");'/>
 			<preference id='labelSetPref'				name='extensions.permatabs.labelSet'				type='bool'	onchange='prefsWindow.disablefields();'/>
 			<preference id='labelColorPref'				name='extensions.permatabs.labelColor'				type='string' onchange='prefsWindow.transparency("permaTabsPrefLabelColor");'/>
 			
-			<preference id='closeButtonImagePref' 		name='extensions.permatabs.closeButtonImage'		type='bool'/>
+			<!--<preference id='closeButtonImagePref' 	name='extensions.permatabs.closeButtonImage'		type='bool'/>-->
 			<preference id='removeBackgroundPref' 		name='extensions.permatabs.removeBackground'		type='bool'/>
-			<preference id='macStylePref' 				name='extensions.permatabs.macStyle'				type='bool'	onchange='prefsWindow.disablefields();'/>
         </preferences>
         
 		<groupbox>
-			<caption label="&option.ruleBox.label;"/>
+			<caption label="&option.unsetBox.label;"/>
 
-			<checkbox id="permaTabsPrefForceNewTabs" label="&option.forceNewTab.label;" preference="forceNewTabsPref"/>
-			<checkbox id="permaTabsPrefForceNewTabsDomain" label="&option.forceNewTabDomain.label;" preference="forceNewTabsDomainPref" class="indent" />
-			
-			<separator class='groove'/>
-			
-			<checkbox id="permaTabsPrefAllowUrlbarDomain" label="&option.AllowUrlbarDomain.label;" preference="allowUrlbarDomainPref" />
-			<checkbox id="permaTabsPrefAllowSubDomains" label="&option.allowSubDomains.label;" preference="allowSubDomainsPref" />
+			<radiogroup preference="unsetActionPref">
+				<radio value="0" label="&option.revertIntoTab.label;"/>
+				<radio value="1" label="&option.revertIntoAppTab.label;"/>
+				<radio value="2" label="&option.closeTab.label;"/>
+			</radiogroup>
 		</groupbox>
 		
 		<groupbox orient="horizontal">
@@ -70,9 +64,8 @@
 
 				<separator class='groove'/>
 
-				<checkbox id="permaTabsPrefCloseButtonImage" label="&option.useCloseButtonImage.label;" preference="closeButtonImagePref"/>
+				<!--<checkbox id="permaTabsPrefCloseButtonImage" label="&option.useCloseButtonImage.label;" preference="closeButtonImagePref"/>-->
 				<checkbox id="permaTabsPrefForceColor" label="&option.removeBackground.label;" preference="removeBackgroundPref" />
-				<checkbox id="permaTabsPrefMacStyle" label="&option.macStyle.label;" preference="macStylePref"/>
 			</vbox>
 		</groupbox>
 
@@ -83,10 +76,7 @@
 
         <preferences>
 			<preference id='hideAdditionalMenuItemsPref'	name='extensions.permatabs.hideAdditionalMenuItems'		type='bool'	onchange='prefsWindow.disablefields();'/>
-			<preference id='subMenuPref'					name='extensions.permatabs.subMenu'						type='bool'	onchange='prefsWindow.disablefields();'/>
-			<preference id='subMenuExcludePref'				name='extensions.permatabs.subMenuExclude'				type='bool'/>
 
-			<preference id='loadonstartupPref'				name='extensions.permatabs.loadonstartup'				type='bool'/>
 			<preference id='askUnsetPref'					name='extensions.permatabs.askUnset'					type='bool'/>
 			<preference id='askOverwritePref'				name='extensions.permatabs.askOverwrite'				type='bool'/>
         </preferences>
@@ -95,15 +85,11 @@
 			<caption label="&option.menuBox.label;"/>
 
 			<checkbox id="permaTabsPrefHideAdditionalMenuItems" label="&option.hideAdditionalMenuItems.label;" preference="hideAdditionalMenuItemsPref"/>
-			<separator class='groove'/>
-			<checkbox id="permaTabsPrefSubMenu" label="&option.subMenu.label;" preference="subMenuPref"/>
-			<checkbox id="permaTabsPrefSubMenuExclude" label="&option.subMenuExclude.label;" preference="subMenuExcludePref" class="indent"/>
 		</groupbox>
 
 		<groupbox>
 			<caption label="&option.miscBox.label;"/>
 
-			<checkbox id="permaTabsPrefLoadOnStartup" label="&option.loadOnStartup.label;" preference="loadonstartupPref"/>
 			<checkbox id="permaTabsPrefAskUnset" label="&option.askUnset.label;" preference="askUnsetPref"/>
 			<checkbox id="permaTabsPrefAskOverwrite" label="&option.askOverwrite.label;" preference="askOverwritePref"/>
 		</groupbox>
@@ -128,6 +114,9 @@
 			<preference id='homeKeyActivePref'			name='extensions.permatabs.homeKeyActive'			type='bool'		onchange='prefsWindow.disablefields();'/>
 			<preference id='homeKeyModificatorPref'		name='extensions.permatabs.homeKeyModificator'		type='string'/>
 			<preference id='homeKeyPref'				name='extensions.permatabs.homeKey'					type='string'/>
+			<preference id='setHomeKeyActivePref'		name='extensions.permatabs.setHomeKeyActive'		type='bool'		onchange='prefsWindow.disablefields();'/>
+			<preference id='setHomeKeyModificatorPref'	name='extensions.permatabs.setHomeKeyModificator'	type='string'/>
+			<preference id='setHomeKeyPref'				name='extensions.permatabs.setHomeKey'				type='string'/>
         </preferences>
 
 		<groupbox>
@@ -204,6 +193,52 @@
 							</menulist>
 
 							<menulist id="PermaTabsPrefHomeKey" preference="homeKeyPref">
+								<menupopup>
+									<menuitem label="A" value="A"/>
+									<menuitem label="B" value="B"/>
+									<menuitem label="C" value="C"/>
+									<menuitem label="D" value="D"/>
+									<menuitem label="E" value="E"/>
+									<menuitem label="F" value="F"/>
+									<menuitem label="G" value="G"/>
+									<menuitem label="H" value="H"/>
+									<menuitem label="I" value="I"/>
+									<menuitem label="J" value="J"/>
+									<menuitem label="K" value="K"/>
+									<menuitem label="L" value="L"/>
+									<menuitem label="M" value="M"/>
+									<menuitem label="N" value="N"/>
+									<menuitem label="O" value="O"/>
+									<menuitem label="P" value="P"/>
+									<menuitem label="Q" value="Q"/>
+									<menuitem label="R" value="R"/>
+									<menuitem label="S" value="S"/>
+									<menuitem label="T" value="T"/>
+									<menuitem label="U" value="U"/>
+									<menuitem label="V" value="V"/>
+									<menuitem label="W" value="W"/>
+									<menuitem label="X" value="X"/>
+									<menuitem label="Y" value="Y"/>
+									<menuitem label="Z" value="Z"/>
+								</menupopup>
+							</menulist>
+						</row>
+						<row>
+							<checkbox id="permaTabsPrefSetHomeKeyActive" label="&option.setHomeKey.label;" preference="setHomeKeyActivePref"/>
+
+							<menulist id="permaTabsPrefSetHomeKeyModificator" preference="setHomeKeyModificatorPref">
+								<menupopup>
+									<menuitem label="Alt" value="alt"/>
+									<menuitem label="&option.ctrl.label;" value="accel"/>
+									<menuitem label="Shift" value="shift"/>
+									<menuitem label="Alt+&option.ctrl.label;" value="alt,accel"/>
+									<menuitem label="&option.ctrl.label;+Shift" value="accel,shift"/>
+									<menuitem label="Shift+Alt" value="shift,alt"/>
+									<menuitem label="Alt+&option.ctrl.label;+Shift" value="alt,accel,shift"/>
+								</menupopup>
+							</menulist>
+
+							<menulist id="PermaTabsPrefSetHomeKey" preference="setHomeKeyPref">
 								<menupopup>
 									<menuitem label="A" value="A"/>
 									<menuitem label="B" value="B"/>

@@ -75,20 +75,13 @@ toolbar[iconsize="small"] #permatabs-togglebutton[disabled=true]
 	display: none !important;
 }
 
-#browser tab.tabbrowser-tab[isPermaTab=true] *
+tab.tabbrowser-tab[isPermaTab=true] *
 {
 	background-color: transparent !important;
 	color: #000000 !important;
 }
 
-#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-left { }
-#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-middle { }
-#browser tab.tabbrowser-tab:not([selected="true"])[isPermaTab=true] .tab-image-right { }
-#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-left { }
-#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-middle { }
-#browser tab.tabbrowser-tab[isPermaTab=true] .tab-image-right { }
-
-#browser tab.tabbrowser-tab[isPermaTab=true]
+tab.tabbrowser-tab[isPermaTab=true]
 {
 	background-color: #f2f2a9 !important;
 	color: #000000 !important;

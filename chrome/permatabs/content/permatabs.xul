@@ -26,6 +26,7 @@
 		<keyset id="permatabsKeyset">
 			<key id="permaTabToggleKey" oncommand="permaTabs.togglePermanence(true);" key="p" modifiers="alt"/>
 			<key id="permaTabHomeKey" oncommand="permaTabs.goHome(true);" key="o" modifiers="alt"/>
+			<key id="permaTabSetHomeKey" oncommand="permaTabs.setHome(true);" disabled="true"/>
 		</keyset>
 		<keyset id="mainKeyset"><keyset id="permatabsKeyset" /></keyset>
 	</window>

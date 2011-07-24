@@ -6,40 +6,24 @@
 	<Description about="urn:mozilla:install-manifest">
 
 		<em:id>{20291fcc-1471-46c8-8213-0911f5ce6d66}</em:id>
-		<em:version>1.9.3</em:version>
-
-
-		<em:localized>
-			<Description>
-				<em:locale>de-DE</em:locale>
-
-				<em:name>PermaTabs Mod</em:name>
-				<em:description>Tabs können permanent gesetzt werden, wodurch sie nicht geschlossen werden können und auch nach einem Neustart des Browsers weiterhin vorhanden sind</em:description>
-
-				<em:creator>deos (deos.dev@gmail.com)</em:creator>
-				<em:developer>Originalcode von Done Smart Ltd (www.donesmart.com)</em:developer>
-
-				<em:homepageURL>https://addons.mozilla.org/firefox/addon/7816</em:homepageURL>
-			</Description>
-		</em:localized>
+		<em:version>2.0.0 beta 1</em:version>
 
 
 		<em:name>PermaTabs Mod</em:name>
 		<em:description>Create non-closable tabs that stick around between sessions</em:description>
 
 		<em:creator>deos (deos.dev@gmail.com)</em:creator>
-		<em:developer>Originalcode by Done Smart Ltd (www.donesmart.com)</em:developer>
+		<em:developer>Code based on PermaTabs by Done Smart Ltd (www.donesmart.com)</em:developer>
 
 		<em:homepageURL>https://addons.mozilla.org/firefox/addon/7816</em:homepageURL>
-
 
 		<em:optionsURL>chrome://permatabs/content/prefsWindow.xul</em:optionsURL>
 
 		<em:targetApplication>
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>3.0</em:minVersion>
-				<em:maxVersion>3.6.*</em:maxVersion>
+				<em:minVersion>4.0b8</em:minVersion>
+				<em:maxVersion>4.0b*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 

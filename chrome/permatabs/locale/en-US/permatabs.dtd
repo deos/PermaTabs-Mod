@@ -5,11 +5,10 @@
 
 <!ENTITY options.mainPane.label "Main">
 
-<!ENTITY option.ruleBox.label "Rules">
-<!ENTITY option.forceNewTab.label "Force links inside permatabs to always open in a new tab">
-<!ENTITY option.forceNewTabDomain.label "Exclude links to same domain from above rule">
-<!ENTITY option.AllowUrlbarDomain.label "Do not open urlbar entries within the same domain in a new tab">
-<!ENTITY option.allowSubDomains.label "Ignore subdomains">
+<!ENTITY option.unsetBox.label "When unsetting a permaTab">
+<!ENTITY option.revertIntoTab.label "Revert into normal tab">
+<!ENTITY option.revertIntoAppTab.label "Let tab stay pinned on">
+<!ENTITY option.closeTab.label "Close tab">
 
 <!ENTITY option.designBox.label "Appearance">
 <!ENTITY option.color.label "PermaTab color">
@@ -17,18 +16,14 @@
 <!ENTITY option.transparent.label "Transparent">
 <!ENTITY option.useCloseButtonImage.label "Use icon to highlight PermaTabs">
 <!ENTITY option.removeBackground.label "Remove background of PermaTabs">
-<!ENTITY option.macStyle.label "Activate appearance adjustment for Mac-Themes">
 
 
 <!ENTITY options.advancedPane.label "Advanced">
 
 <!ENTITY option.menuBox.label "Context menu">
 <!ENTITY option.hideAdditionalMenuItems.label "Do not show additional context menu items">
-<!ENTITY option.subMenu.label "Merge menu items into a submenu">
-<!ENTITY option.subMenuExclude.label "Exclude PermaTabs switch">
 
 <!ENTITY option.miscBox.label "Misc.">
-<!ENTITY option.loadOnStartup.label "Load PermaTabed pages on startup">
 <!ENTITY option.askUnset.label "Ask before removing a PermaTab">
 <!ENTITY option.askOverwrite.label "Ask before overwriting a PermaTab Home">
 
@@ -41,5 +36,6 @@
 <!ENTITY option.keyBox.label "Shortcuts">
 <!ENTITY option.toggleKey.label "Permanent Tab">
 <!ENTITY option.homeKey.label "Go to PermaTab Home">
+<!ENTITY option.setHomeKey.label "Set current site as PermaTab Home">
 <!ENTITY option.restartInfo.label "Changes require Browser-restart">
 <!ENTITY option.ctrl.label "Ctrl">

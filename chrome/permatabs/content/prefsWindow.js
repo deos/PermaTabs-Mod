@@ -26,15 +26,13 @@ function PrefsWindow()
 	
 	this.disablefields = function()
 	{
-		var pref = { "ForceNewTabs" 			: "permaTabsPrefForceNewTabs",
-					 "ForceNewTabsDomain" 		: "permaTabsPrefForceNewTabsDomain",
-					 "HideAdditionalMenuItems" 	: "permaTabsPrefHideAdditionalMenuItems",
-					 "SubMenu" 					: "permaTabsPrefSubMenu",
-					 "Distinguish" 				: "permaTabsPrefDistinguish",
-					 "LabelSet"					: "permaTabsPrefLabelSet",
-					 "MacStyle"					: "permaTabsPrefMacStyle",
-					 "ToggleKey"				: "permaTabsPrefToggleKeyActive",
-					 "HomeKey"					: "permaTabsPrefHomeKeyActive" };
+		var pref = {
+			"Distinguish"				: "permaTabsPrefDistinguish",
+			"LabelSet"					: "permaTabsPrefLabelSet",
+			"ToggleKey"					: "permaTabsPrefToggleKeyActive",
+			"HomeKey"					: "permaTabsPrefHomeKeyActive",
+			"SetHomeKey"				: "permaTabsPrefSetHomeKeyActive"
+		 };
 
 		for(i in pref)
 		{
@@ -42,28 +40,19 @@ function PrefsWindow()
 			pref[i] = (opt.hasAttribute('checked') && opt.getAttribute('checked')=='true');
 		}
 
-		document.getElementById('permaTabsPrefForceNewTabsDomain').setAttribute('disabled', !pref['ForceNewTabs']);
-		document.getElementById('permaTabsPrefAllowUrlbarDomain').setAttribute('disabled', (pref['ForceNewTabs'] && !pref['ForceNewTabsDomain']));
-		document.getElementById('permaTabsPrefAllowSubDomains').setAttribute('disabled', !(pref['ForceNewTabs'] && pref['ForceNewTabsDomain']));
-		
 		document.getElementById('permaTabsPrefColor').setAttribute('disabled', !pref['Distinguish']);
 		document.getElementById('permaTabsPrefColorTransparent').setAttribute('disabled', !pref['Distinguish']);
 		document.getElementById('permaTabsPrefLabelColor').setAttribute('disabled', !pref['LabelSet']);
 		document.getElementById('permaTabsPrefLabelColorTransparent').setAttribute('disabled', !pref['LabelSet']);
-
-		document.getElementById('permaTabsPrefForceColor').setAttribute('disabled', pref['MacStyle']);
-		if(pref['MacStyle'])
-		{ document.getElementById('permaTabsPrefForceColor').setAttribute('checked', true); }
-		
-		document.getElementById('permaTabsPrefSubMenu').setAttribute('disabled', pref['HideAdditionalMenuItems']);
-		document.getElementById('permaTabsPrefSubMenuExclude').setAttribute('disabled', (pref['HideAdditionalMenuItems'] || !pref['SubMenu']));
-		document.getElementById('permaTabsPrefAskOverwrite').setAttribute('disabled', pref['HideAdditionalMenuItems']);
 
 		document.getElementById('permaTabsPrefToggleKeyModificator').setAttribute('disabled', !pref['ToggleKey']);
 		document.getElementById('PermaTabsPrefToggleKey').setAttribute('disabled', !pref['ToggleKey']);
 
 		document.getElementById('permaTabsPrefHomeKeyModificator').setAttribute('disabled', !pref['HomeKey']);
 		document.getElementById('PermaTabsPrefHomeKey').setAttribute('disabled', !pref['HomeKey']);
+
+		document.getElementById('permaTabsPrefSetHomeKeyModificator').setAttribute('disabled', !pref['SetHomeKey']);
+		document.getElementById('PermaTabsPrefSetHomeKey').setAttribute('disabled', !pref['SetHomeKey']);
 	};
 	
 	this.transparency = function(id, toggle)
@@ -78,7 +67,7 @@ function PrefsWindow()
 
 			if(document.getElementById(colorpicker.getAttribute("preference")).instantApply)
 			{
-				//linux!!
+				//linux/mac!! what now?
 			}
 		}
 
