@@ -6,6 +6,8 @@ pref("extensions.permatabs.labelSet", false);
 pref("extensions.permatabs.labelColor", "#000000");
 pref("extensions.permatabs.removeBackground", false);
 
+pref("extensions.permatabs.forceNewTabs", false);
+
 pref("extensions.permatabs.hideAdditionalMenuItems", false);
 
 pref("extensions.permatabs.askUnset", false);

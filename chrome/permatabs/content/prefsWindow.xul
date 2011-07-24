@@ -77,6 +77,7 @@
         <preferences>
 			<preference id='hideAdditionalMenuItemsPref'	name='extensions.permatabs.hideAdditionalMenuItems'		type='bool'	onchange='prefsWindow.disablefields();'/>
 
+			<preference id='forceNewTabsPref'				name='extensions.permatabs.forceNewTabs'				type='bool'/>
 			<preference id='askUnsetPref'					name='extensions.permatabs.askUnset'					type='bool'/>
 			<preference id='askOverwritePref'				name='extensions.permatabs.askOverwrite'				type='bool'/>
         </preferences>
@@ -89,6 +90,10 @@
 
 		<groupbox>
 			<caption label="&option.miscBox.label;"/>
+
+			<checkbox id="permaTabsPrefForceNewTabs" label="&option.forceNewTab.label;" preference="forceNewTabsPref"/>
+
+			<separator class='groove'/>
 
 			<checkbox id="permaTabsPrefAskUnset" label="&option.askUnset.label;" preference="askUnsetPref"/>
 			<checkbox id="permaTabsPrefAskOverwrite" label="&option.askOverwrite.label;" preference="askOverwritePref"/>

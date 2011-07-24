@@ -24,6 +24,7 @@
 <!ENTITY option.hideAdditionalMenuItems.label "Zusätzliche Kontextmenüeinträge ausblenden">
 
 <!ENTITY option.miscBox.label "Sonstiges">
+<!ENTITY option.forceNewTab.label "Links in Permatabs immer in einem neuem Tab öffnen">
 <!ENTITY option.askUnset.label "Sicherheitsabfrage vor entfernen eines PermaTabs">
 <!ENTITY option.askOverwrite.label "Sicherheitsabfrage vor überschreiben der Startseite eines Permatabs">
 

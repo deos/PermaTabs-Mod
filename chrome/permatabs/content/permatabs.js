@@ -42,6 +42,7 @@ var permaTabs = {
 	initialized: false,
 	prefs: null,
 	tabContextMenu: null,
+	OS: null,
 
 	tempAllowed: false,
 	addonsInstalled: {},
@@ -66,6 +67,7 @@ var permaTabs = {
 		//init services and get data
 		this.prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
 		this.tabContextMenu = document.getElementById('content').mStrip.childNodes[1];
+		this.OS = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS;
 
 		//set some browser data
 		this.setStyles();
@@ -148,6 +150,34 @@ var permaTabs = {
 		gURLBar.handleCommand = function(){
 			permaTabs.tempAllowSameUrlDomain();
 			return permaTabs.wrappedFunctions['gURLBar.handleCommand'].apply(gURLBar, arguments);
+		};
+
+		//if force all links in new tab is enabled, go ahead and force them
+		this.wrappedFunctions['window.contentAreaClick'] = window.contentAreaClick;
+		window.contentAreaClick = function(event, fieldNormalClicks){
+			if(!event.isTrusted){
+				return true;
+			}
+
+			if(permaTabs.isPermaTab(getBrowser().mCurrentTab) && permaTabs.prefs.getBoolPref('extensions.permatabs.forceNewTabs') && permaTabs.checkLinkToNewTab(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && event.button != 1 && event.button != 2 && !event.getPreventDefault()){
+				var newEvent = document.createEvent("MouseEvents");
+
+				if(permaTabs.OS != 'Darwin'){
+					newEvent.initMouseEvent("click", event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, true, event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget);
+				}
+				else{
+					newEvent.initMouseEvent("click", event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, true, event.button, event.relatedTarget);
+				}
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				event.target.dispatchEvent(newEvent);
+
+				return false;
+			}
+
+			return permaTabs.wrappedFunctions['window.contentAreaClick'].apply(window, arguments);
 		};
 	},
 
@@ -503,8 +533,13 @@ var permaTabs = {
 
 				tab.setAttribute('isPermaTab', true);
 				tab.setAttribute('permaTabUrl', urls[i]);
-
-				getBrowser().getBrowserForTab(tab).loadURI(urls[i]);
+				
+				try{
+					getBrowser().getBrowserForTab(tab).loadURI(urls[i]);
+				}catch(e){
+					//could not load, and now?
+					continue;
+				}
 
 				getBrowser().pinTab(tab);
 			}
@@ -527,7 +562,7 @@ var permaTabs = {
 					document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 				    document.styleSheets[x].deleteRule(document.styleSheets[x].cssRules.length - 1);
 
-					document.styleSheets[x].insertRule('tab.tabbrowser-tab[isPermaTab=true] * { background-color: transparent !important;' + textcolorrule + '}', document.styleSheets[x].cssRules.length);
+					document.styleSheets[x].insertRule('tab.tabbrowser-tab[isPermaTab=true] * { /*background-color: transparent !important;*/' + textcolorrule + '}', document.styleSheets[x].cssRules.length);
 					document.styleSheets[x].insertRule('tab.tabbrowser-tab[isPermaTab=true] {' + colorrule + textcolorrule + imagerule + '}', document.styleSheets[x].cssRules.length);
 
 					break;
@@ -778,6 +813,25 @@ var permaTabs = {
 		}
 
 		return '';
+	},
+
+	checkLinkToNewTab: function(linkNode){
+		if(!linkNode.hasAttribute('href')){
+			var parent = linkNode.parentNode;
+
+			while(parent && parent.hasAttribute && !parent.hasAttribute('href')){
+				parent = parent.parentNode;
+			}
+
+			if(parent && parent.hasAttribute && parent.hasAttribute('href')){ 
+				linkNode = parent;
+			}
+		}
+
+		return (linkNode.hasAttribute('href') &&
+				!/javascript\s*:/.test(linkNode.getAttribute('href').toLowerCase()) &&
+				(!linkNode.href || linkNode.getAttribute('href').indexOf('#') != 0));
+
 	},
 
 	OptionWindow: function(){

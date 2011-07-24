@@ -1,3 +1,18 @@
+Version 2.0.0 BETA 2
+* Added: "Force links inside permatabs to always open in a new tab" functionality 
+* Max version bump for FF 4 final
+Released: 2011-03-29
+
+Version 2.0.0 BETA 1
+* Complete code rewrite!
+* Addon works in FF 4 (beta only for now)
+* System is now based on App tabs, a native FF function introduced in FF 4
+* Added some options concerning the App tabs integration and such
+* Removed FF 3 support
+* Removed some options and functions that noone needs
+* Removed unmaintained translations
+Released: 2011-02-21
+
 Version 1.9.3
 * Added: Submenu for Toolbarbutton (When additional options are activated)
 * Added: Shortcut-key for PermaTab Home
